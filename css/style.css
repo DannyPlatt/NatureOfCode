@@ -1,0 +1,79 @@
+:root {
+  --white: #f4f1de;
+  --orange: #e07a5f;
+  --blue: #3d405b;
+  --green: #81b29a;
+  --tan: #f2cc8f;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: white;
+  margin: 0;
+  padding: 50px;
+  box-sizing: border-box; /* ensures padding is included in width */
+}
+.header {
+  padding: 80px;
+  text-align: center;
+  background: var(--green);
+  color: white;
+}
+
+.header h1 {
+  font-size: 40px;
+}
+
+/* Style the top nav bar */
+.navbar {
+  overflow: hidden;
+  background-color: var(--blue);
+}
+
+/* style navbar links */
+.navbar a {
+  float: left; /* links stay side by side */
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none; /* remove underline */
+}
+
+/* right-aligned link */
+.navbar a.right {
+  float: right;
+}
+
+/* change color on mouse hover */
+.navbar a:hover {
+  background-color: var(--orange);
+  color: black;
+}
+
+
+canvas {
+  display: block;
+}
+
+iframe {
+  display: block;
+  margin: 20px auto;
+  max-width: 100%;
+  border: none;
+}
+
+button { 
+  background-color: var(--blue); /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+button:hover {
+  background-color: var(--orange);
+  color: black;
+}
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="Chapter 0" content="width=device-width, initial-scale=1">
+    <title>NoC: Chapter 0</title>
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+  <body>
+    <div class="header">
+      <h1>Chapter 0: Randomness</h1>
+      <button onclick="updateParagraph()"> Random Number!</button>
+      <p id="headParagraph"></p>
+      <script>
+        function updateParagraph() {
+          const paragraph = document.getElementById('headParagraph');
+          paragraph.textContent = Math.random() ** 10;
+        }
+      </script>
+    </div>
+
+    <div class="navbar">
+      <a href="./chapter0.html">Chapter0</a>
+      <a href="./chapter1.html">Chapter1</a>
+      <a href="./chapter2.html">Chapter2</a>
+      <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
+      <a href="./index.html" class="right">Home</a>
+    </div>
+  
+    <h1>Random Walker</h1>
+    <p>The random walk is simply the random movement of an object. This could be the patterns of a molecule in a gas, an animal grazing, etc. </p>
+    <p>P5.js has the random function, normally from 0 - 1. we can indicate a max to the range by passing in a value into the function.</p>
+    <p>`const choice = floor(random(4))` </p>
+    <p>This gives a random selection between 0 and 3. </p>
+    <h2>Example 0.1: Traditional Random Walker</h2>
+    <iframe src="./examples/00_randomness/ex_00_0randomWalk/index.html" width=600 height=350 scrolling="no"></iframe>
+    <p>Here our random walker is moving in only the manhattan coords: +x or -x or +y or -y</p>
+
+
+
+    <h2> Random distribution</h2>
+    <p> Random in computers is not truely random. instead, they are "Pseudorandom", meaning they are a result of a mathematical function that simulates randomness. </p>
+    <iframe src="./examples/00_randomness/ex_00_1randomGraph/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h2>Affecting Probabilities</h2>
+    <p>Instead of simply having random movements, we can have probability thresholds for our walker.</p>
+    <p>In the following example, it has a 55% chance of being moved in the direction of the mouse. It surpises me how significant just a 55% chance of moving towards the mouse makes a difference. it feels like the walker is moving directly towards the mouse.</p>
+    <iframe src="./examples/00_randomness/ex_00_2followWalker/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h2>Gaussian Distribution</h2>
+    <p>To create a Gaussian (normal) distribution, use `randomGaussian()` from the p5 library</p>
+    <p>The `randomGaussian()` function returns a normal distribution of random positive and negative numbers with a mean of 0 and SD of 1. Thus, it is a <strong>standard normal distribution</strong>.</br> However, we can change this by entering our own parameters. `randomGaussian(mean, SD)`</p>
+    <p>In the example below, we use <strong>x = randomGaussian(width/2, 50)</strong></p>
+    <iframe src="./examples/00_randomness/ex_00_3standardDeviation/index.html" width=600 height=500 scrolling="no"></iframe>
+
+    <h2>Custom random Distribution</h2>
+    <p>If we have a graph with value on the x axis and probability of being selected on the y axis, we can model create the probability that a value is selected based off of the shape of the graph.</p>
+    <p>For example, if the graph is f(x) = x, then as x increases, the chances that it is selected grows as the value of the number increases</p>
+    <p>One solution is to use 2 random numbers, where our first random number r1 is our x value and a second <strong>qualifying random value</strong> is selected. In the following example, we look at modeling a quadratic; y = x^2.</p>
+    <iframe src="./examples/00_randomness/ex_00_4quadratic/index.html" width=600 height=400 scrolling="no"></iframe>
+    <p>I'm not sure why in the above example, the quadratic nature is only seen in the first few points. Why after the 4th x point does it just level off? i don't know.</p>
+    <h1>Perlin Noise</h1>
+    <p>Perlin noise creates a more organic random behaviour. Where the random selection of the following is based on the previous values. This makes Perlin noise preferable for generating natural qualities such as clouds, landscapes, and patterned textures.</p>
+    <p>To use Perlin noise, use an offset stepping variable that increments with each loop of the the drawing cycle. This is because if we pass the same x value into perlin(offset),  the function returns the same y value. </p>
+    <h2>Noise Ranges</h2>
+    <p>Perlin function returns a value from 0 to 1. Use the map() function to map the range to whatever size we need. it takes 5 arguments. map(value, current min, current max, new min, new max)</p>
+    <h3>Perlin Noise Walker</h3>
+    <iframe src="./examples/00_randomness/ex_00_5perlinWalker/index.html" width=600 height=400 scrolling="no"></iframe>
+    <h3>Perlin Noise StepSize</h3>
+    <p>In the example below, Perlin noise is used as the step size of the random walker rather than the x, y, points. this is what causes it to make many small steps followed by many large steps.</p>
+    <iframe src="./examples/00_randomness/ex_00_6perlinWalker2/index.html" width=600 height=400 scrolling="no"></iframe>
+
+  </body>
+</html>
