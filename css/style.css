@@ -12,6 +12,33 @@ body {
   padding: 50px;
   box-sizing: border-box; /* ensures padding is included in width */
 }
+
+h1 {
+  color: var(--blue);
+  font-size: 40px;
+}
+h2 {
+  color: var(--orange);
+  font-size: 35px;
+}
+h3 {
+  color: var(--green);
+  font-size: 30px;
+}
+
+p {
+  font-size: 25px;
+}
+pre code {
+  font-size: 20px;
+}
+code {
+  color: #111;
+  background: #EEE;
+  padding: 2px, 4px;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+}
 .header {
   padding: 80px;
   text-align: center;
@@ -37,6 +64,7 @@ body {
   text-align: center;
   padding: 14px 20px;
   text-decoration: none; /* remove underline */
+  font-size: 20px;
 }
 
 /* right-aligned link */
