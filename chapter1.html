@@ -3,24 +3,43 @@
   <head>
     <meta charset="UTF-8">
     <meta name="Chapter 0" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title>NoC: Chapter 0</title>
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
   </head>
   <body>
   <body>
     <div class="header">
-      <h1>Chapter 0: Randomness</h1>
-      <p>sadpkfj98038ygpw[vdzjbxj;ifowaufy0uhiu3qg9r80912;oirslkjbdznvf;jfpa98weoy<br>
-      uh2q098vr7q487utwlkjsghv8q4w7guiojqwvr0-d9woiut4oqwoiulkj1b3oiwsfub[pqwa\fzs.;wp95203atw8yer19283057ztsiu<br>.ygxldhwp4ubt2wb-2wv[hae9yt-4]]]</p>
+      <h1>Chapter 1: Vectors</h1>
+      <p>Direction and Magnitude</p>
     </div>
-
     <div class="navbar">
       <a href="./chapter0.html">Chapter0</a>
       <a href="./chapter1.html">Chapter1</a>
       <a href="./chapter2.html">Chapter2</a>
       <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
       <a href="./index.html" class="right">Home</a>
     </div>
-  
+    <h1>Uses of Vectors</h1>
+    <p>Position, Velocity, Acceleration are often all modeled as vectors. In p5.js we can use the <code>p5.Vector</code> class</p>
+    <ul>
+      <li>Position: The movement from the origin to the current location</li>
+      <li>Velocity: The vector represents the change in position over time or frames</li>
+      <li>Acceleration: The vector for the change in velocity over time or frames</li>
+    </ul>
+    <h2>Bouncing ball With Vectors</h2>
+    <iframe src="./examples/01_vectors/ex_01_0vectorBouncingBall/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>Just a note for future drawings. Set a class object as a global variable using <code>let ball;</code>. Then within the setup function, assign a class object to the variable: <code>ball = new Ball();</code></sub>
+    <p>The above example is not without flaws. Often times the ball will get stuck in a wall. I imagine this is because the step it takes in it's velocity is larger than 1 pixel, thus if it steps past the bounds the velocity changes, but it's position is not reset, thus the volocity flips again in the next round, keeping it stuck in an oscillation</p>
+    <h2>Textbook Exercise 1.2: 3D bouncing ball</h2>
+    <p>Here I've experimented with using the p5.js 3d elements</p>
+    <iframe src="./examples/01_vectors/ex_01_1BouncingBall3D/index.html" width=600 height=350 scrolling="no"></iframe>
+
+
   </body>
 </html>
