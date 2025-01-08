@@ -39,6 +39,42 @@
     <h2>Textbook Exercise 1.2: 3D bouncing ball</h2>
     <p>Here I've experimented with using the p5.js 3d elements</p>
     <iframe src="./examples/01_vectors/ex_01_1BouncingBall3D/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>In this canvas, you can left or right click, and scroll to manipulate the window. This is simply done using p5.js builtin <code>orbitControl()</code> within the draw function.</sub>
+    <h2>Vector Methods</h2>
+    <ul>
+      <li> add()</li>
+      <li> sub()</li>
+      <li> mult() - Multiply vector by a scalar value</li>
+      <li> div() - Divide vector by a scalar value</li>
+      <li> mag()</li>
+      <li> setMag()</li>
+      <li> normalize()</li>
+      <li> limit()</li>
+      <li> heading() - Returns the 2D heading of this vector expressed as an angle</li>
+      <li> rotate()</li>
+      <li> lerp()</li>
+      <li> dist() - returns euclidean distance between 2 vectors</li>
+      <li> angleBetween()</li>
+      <li> dot()</li>
+      <li> cross()</li>
+      <li> random2D()</li>
+      <li> random3D()</li>
+    </ul>
+    <h3>Reminder for Subtraction</h3>
+    <p>In subtraction, to get a vector C pointing from A to B, start with the end point in the equation:<code>C = B - A</code></p>
+    <h2>Example: Vector Magnitude</h2>
+    <p>Here we take the distance from the center to the mouse, and use it as the magnitude of the diameter for the circle, as well as the value for the blue fill color.</p>
+    <iframe src="./examples/01_vectors/ex_01_2VectorMagnitude/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h2>Motion with Vectors</h2>
+    <p>Step 0: Add acceleration to velocity vector</p>
+    <p>Step 1: Add velocity vector to position</p>
+    <p>Step 2: Draw object at position</p>
+    <h3>Creating a Mover Class</h3>
+    <p>We'll create a basic class that holds the information regarding position and velocity.</p>
+    <p>Within the mover object, there is an update function that adds the acceleration to velocity, and velocity to position. It also flips the velocity if a wall has been hit.</p>
+    <iframe src="./examples/01_vectors/ex_01_3ConstVelocity/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>Here we are calculating the distance from ball to mouse in both x and y directions, mapping that distance from -1 to 1, and using this as our acceleration </sub>
+    <p>While programming motion, it's helpful to try and accomplish the desired effect without changing position and velocity directly, but rather creating forces to do this work for us.</p>
 
 
   </body>

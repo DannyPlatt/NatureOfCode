@@ -7,7 +7,7 @@ class Ball {
     this.position = createVector(x, y, z);
     this.velocity = createVector(random(-5,5), random(-5,5), random(-5,5));
     this.radius = radius;
-    this.rotateDy = 0;
+    this.rotateDy = random(-0.05,0.05);
   }
   update() {
     this.position.add(this.velocity);
@@ -20,14 +20,12 @@ class Ball {
     fill(175);
     translate(this.position.x, this.position.y, this.position.z);
     rotateY(this.rotateDy);
+    rotateX(this.rotateDy*2);
     sphere(this.radius, 5, 5);
     pop()
   }
   checkEdges() {
-    console.log(this.position.z);
-    console.log(this.velocity.z);
     if (this.position.x + this.radius > width/2 || this.position.x - this.radius < -width/2) {
-      console.log("flipping velocity");
       this.velocity.x *= -1;
     }
     else if (this.position.y + this.radius > height/2 || this.position.y - this.radius < -height/2) {
@@ -42,19 +40,23 @@ let ball;
 // let ball1;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 350, WEBGL);
   ball = new Ball(0,0, -50, 20);
   // ball1 = new Ball(50,100, 10);
 }
 
 function draw() {
+  orbitControl();
   background(210);
-  fill(255);
+  noFill();
+  push();
   stroke(0);
   strokeWeight(3);
-  box(width, height, width);
+  translate(0,0,-width/4)
+  box(width, height, width/2);
+  pop();
   // Enable orbiting with the mouse
-  orbitControl();
   ball.update();
   ball.checkEdges();
   ball.show();

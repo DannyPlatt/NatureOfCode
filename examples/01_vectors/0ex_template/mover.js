@@ -1,8 +1,8 @@
-// The Nature of Code
+// The nature of Code
 // Daniel Platt
-// Chapter 1: Bouncing ball with vector veclocity
-
-class Ball {
+// Mover Class:
+//    Draws a ball that moves around the space and is bounded by the boundaries
+class Mover {
   constructor(x,y,radius) {
     this.position = createVector(x, y);
     this.velocity = createVector(random(-5,5), random(-5,5));
@@ -10,6 +10,7 @@ class Ball {
   }
   update() {
     this.position.add(this.velocity);
+    this.checkEdges();
   }
   show() {
     stroke(0);
@@ -18,30 +19,12 @@ class Ball {
   }
   checkEdges() {
     if (this.position.x + this.radius > width || this.position.x - this.radius < 0) {
+      this.position.x -= this.velocity.x; // reset the position to ensure it doesn't exit bounds
       this.velocity.x *= -1;
     }
     else if (this.position.y + this.radius > height || this.position.y - this.radius < 0) {
+      this.position.y -= this.velocity.y; // reset the position to ensure it doesn't exit bounds
       this.velocity.y *= -1;
     }
   }
 }
-let ball;
-let ball1;
-
-function setup() {
-  createCanvas(600, 350);
-  frameRate(30);
-  ball = new Ball(100,50, 15);
-  ball1 = new Ball(50,100, 10);
-}
-
-function draw() {
-  background(210);
-  ball.update();
-  ball.checkEdges();
-  ball.show();
-  ball1.update();
-  ball1.checkEdges();
-  ball1.show();
-}
-
