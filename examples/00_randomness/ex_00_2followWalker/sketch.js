@@ -6,6 +6,7 @@ let walker;
 let x= 0;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 400);
   walker = new Walker();
   background(210);

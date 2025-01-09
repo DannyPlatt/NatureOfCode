@@ -37,16 +37,19 @@ class Ball {
   }
 }
 let ball;
+let isPlaying = false;
 // let ball1;
 
 function setup() {
-  frameRate(30);
+  frameRate();
   createCanvas(600, 350, WEBGL);
   ball = new Ball(0,0, -50, 20);
+  initPlayButton();
   // ball1 = new Ball(50,100, 10);
 }
 
 function draw() {
+  if (!isPlaying) return;
   orbitControl();
   background(210);
   noFill();
@@ -65,3 +68,12 @@ function draw() {
   // ball1.show();
 }
 
+function initPlayButton() {
+  let playButton = createButton("Play");
+  playButton.position(width-50, 10);
+  playButton.mousePressed(togglePlay);
+}
+function togglePlay() {
+  isPlaying = !isPlaying;
+  this.html(isPlaying ? "Pause" : "Play"); // Update button text
+}

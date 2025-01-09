@@ -11,15 +11,21 @@ class Mover {
     this.velocity = createVector(random(-5,5), random(-5,5));
     this.acceleration = createVector(0,0);
     this.radius = radius;
+    // this.color = p5.Vector.random3D().mult(255);
+    this.color = createVector(random(0,255),random(0,255),random(100,200));
   }
   update() {
-    this.velocity.add(this.acceleration);
+    this.velocity.add(this.acceleration.limit(10));
+    this.velocity.limit(20);
     this.position.add(this.velocity);
     this.checkEdges();
   }
   show() {
-    stroke(0);
-    fill(175);
+    strokeWeight(0);
+    fill(
+      this.color.x, 
+      this.color.y, 
+      this.color.z);
     circle(this.position.x, this.position.y, this.radius * 2);
   }
   checkEdges() {

@@ -8,12 +8,15 @@ let tx = 0;
 let ty = 1000;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 400);
   walker = new Walker();
 }
 
 function draw() {
-  background(210, 1);
+  background(210);
+  strokeWeight(0);
+  text ("fps: " + round(frameRate()), 10,20);
   walker.step();
   walker.show();
 }

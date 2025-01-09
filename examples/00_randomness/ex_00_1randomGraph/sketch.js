@@ -6,6 +6,7 @@ let randomCounts = [];
 let total = 20;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 350);
   for (let i = 0; i < total; i++) {
     randomCounts[i] = 0;
@@ -14,6 +15,7 @@ function setup() {
 
 function draw() {
   background(210);
+  text ("fps: " + round(frameRate()), 10,20);
   // grab a random element within the array and add 1 to the count
   let index = floor(random(randomCounts.length)); 
   randomCounts[index]++; 

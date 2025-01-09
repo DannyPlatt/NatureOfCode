@@ -37,6 +37,10 @@ function setup() {
 
 function draw() {
   background(210);
+  strokeWeight(0);
+  fill(0);
+  text ("fps: " + round(frameRate()), 10,20);
+  strokeWeight(1);
   ball.update();
   ball.checkEdges();
   ball.show();

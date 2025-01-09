@@ -9,6 +9,10 @@ function setup() {
 function draw() {
   frameRate(30);
   background(210);
+  strokeWeight(0);
+  fill(0);
+  text ("fps: " + round(frameRate()), 10,20);
+  strokeWeight(1);
   circle(width/2, height/2, 5);
   let mouse = createVector(mouseX, mouseY);
   let center = createVector(width/2, height/2);

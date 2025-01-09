@@ -6,12 +6,15 @@ let walker;
 let x= 0;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 400);
   walker = new Walker();
 }
 
 function draw() {
-  background(200, 10);
+  background(200);
+  strokeWeight(0);
+  text ("fps: " + round(frameRate()), 10,20);
   walker.step();
   walker.show();
 }
@@ -30,7 +33,7 @@ class Walker {
   }
 
   step() {
-    const stepSize = map(noise(this.xoff), 0, 1, 0, 10);
+    const stepSize = map(noise(this.xoff), 0, 1, 0, 15);
     this.xoff += 0.005
     const choice = floor(random(4));
     if (choice == 0) {

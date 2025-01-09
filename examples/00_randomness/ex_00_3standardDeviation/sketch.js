@@ -7,6 +7,7 @@ let sizeSlider;
 let huespSlider;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 400);
   background(0);
   createControls(450);

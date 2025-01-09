@@ -6,6 +6,7 @@ let countArray = [];
 let length = 100;
 
 function setup() {
+  frameRate(30);
   createCanvas(600, 400);
   for (let i = 0; i < length; i++) {
     countArray[i] = 0;

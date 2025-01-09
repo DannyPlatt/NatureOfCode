@@ -2,6 +2,7 @@
 // Danny Platt
 // use perlin noise to draw the 2 dimentional clouds
 
+let isPlaying = false;
 var cols = 0;
 var rows = 0;
 const scl = 20;
@@ -11,6 +12,8 @@ var terrain = [];
 startOff = 0;
 
 function setup() {
+  frameRate(30);
+  initPlayButton();
   createCanvas(600, 400, WEBGL);
   cols = w / scl;
   rows = h / scl;
@@ -19,6 +22,8 @@ function setup() {
 }
 
 function draw() {
+  if(!isPlaying) 
+    return;
   startOff -= 0.1;
   var yOff = startOff;
   for (var y = 0; y < rows; y++) {
@@ -33,7 +38,6 @@ function draw() {
   background(0);
   stroke(255);
   noFill();
-  orbitControl();
   rotateX(PI/2.8);
   translate(-w/2, -h/2);
   frameRate(60);
@@ -46,6 +50,18 @@ function draw() {
     }
     endShape();
   }
+  let fpsButton = createButton(frameRate().toFixed(0))
+  fpsButton.position(550, 30);
 }
 
+function initPlayButton() {
+  let playButton = createButton("Play");
+  playButton.position(550, 10);
+  playButton.mousePressed(togglePlay);
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  this.html(isPlaying ? "Pause" : "Play"); // Update button text
+}
 
