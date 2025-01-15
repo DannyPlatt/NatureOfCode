@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="Chapter 0" content="width=device-width, initial-scale=1">
+    <title>NoC: Chapter 0</title>
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Chapter 2: Forces</h1>
+      <p>F = ma</p>
+    </div>
+    <div class="navbar">
+      <a href="./chapter0.html">Chapter0</a>
+      <a href="./chapter1.html">Chapter1</a>
+      <a href="./chapter2.html">Chapter2</a>
+      <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
+      <a href="./index.html" class="right">Home</a>
+    </div>
+    <p>Quick note on physics engines: </p>
+    <p>The Purpose of a physics engine is to simulate behaviour of objects in a phyisical environment.
+    This chapter focuses on building a <strong>very</strong> simple physics engine as a learning process. </p>
+    <p>Forces are vectors. Thus they can easily be modeled using p5.Vector. </p>
+    <h2>Newtons Laws:</h2>
+    <h3>Newtons First Law:</h3>
+    <p><code>An object at rest stays at rest, and an object in motion stays in motion</code></p>
+    <p>Pretty simple, however, it may be better to think of this as the following:</p>
+    <p>An object at rest stays at rest, and an object in motion stays in motion, at a constant speed and direction unless acted upon by an unbalanced force.</p>
+    <p>For our p5 Canvas, an object's velocity vecotr will remain constant if in a state of equilibrium</p>
+    <p>This means that the <code>update()</code> function should not apply any mathematical operations on the velocity vector untless a nonzero net force is present. Thus should have updates to the forces elsewhere.</p>
+    <h3>Newtons Third Law:</h3>
+    <p><code>For every action there is an equal and opposite reaction</code></p>
+    <p>In other words, Forces always occur in pairs. The two forces are equal strength but in opposite directions</p>
+    <h2>Acceleration = Force / Mass</h2>
+    <p>This is where the concept of Newton's second law will apply for us. If we want to apply a force to an object, we can take it's mass into account to determin how it's acceleration with react. If we have two objects with different masses, they will accelerate at different rates from the same force.</p>
+    <p>To simplify this process, we can assume an object's mass is 1. Thus Accel = F / M becomes Accel = F. </p>
+    <h2>Updating The Mover</h2>
+    <p>The goal is to be able to apply a simple force such as <code>mover.applyForce(gravity)</code>. To do this, create an applyForce() function.</p>
+    <h2>Force Accumulation:</h2>
+    <p>We want to be able to apply multiple forces to the object. Thus we need to have a net force that we modify whenever we add forces to it. Then this net force will be applied to the acceleration. We can have 1, 10, or 100 forces. The only force that matters to our acceleration is the net force.</p>
+    <h2>Exercise 2.1: Multiple forces</h2>
+  <p>Here the balls are experiencing gravity, which is a constant force with equal effect on each ball. Additionally, when the mouse is clicked, the balls feels a force towards the mouse. This gravitational force is based on the mass of the ball, which is being proportional to the shapes radius, which is randomly generated from 5 - 10</p>
+    <iframe src="./examples/02_forces/ex_02_0applyForce/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h3>Force from Walls</h3>
+    <p>In the canvas below, the walls push on each mover object with a force: <code>Canvas_size / distance_to_wall</code>. Canvas_size is the canvas hight for the y direction and width for the x direction. this causes them to nicely orbit around the center, as they are each getting pushed from all sides.</p>
+    <p>Additionally, when clicked the mouse exerts an outwards force that pushes the objects away from the mouse. The idea of a flux was used, with a constant energy being output but as the distance from the mouse grows, the force disapates according to the equation: <code>Force / (PI*r^2)</code> with r being the distance from object to mouse.</p>
+
+    <iframe src="./examples/02_forces/ex_02_1wind/index.html" width=600 height=350 scrolling="no"></iframe>
+    <p>In the following, Instead of drawing a circle for each, I'm placing a vertex point for a shape. I wonder it will look similar to a lava lamp</p>
+    <iframe src="./examples/02_forces/ex_02_2vertex/index.html" width=600 height=350 scrolling="no"></iframe>
+    <p>Well it's a lot sharper than I was expecting, but certainly fascinating to watch. This is with 5 points. Anything between 5 and 50 is quite pleasing. Beyond this range is either too boring or too chaotic</p>
+    <iframe src="./examples/02_forces/ex_02_3vertex50/index.html" width=600 height=350 scrolling="no"></iframe>
+
+  </body>
+
+</html>
+<!--Physical Sciences. No chem, EASC and PHys-->
