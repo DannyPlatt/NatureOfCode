@@ -23,7 +23,7 @@ function draw() {
   if (!isPlaying){
     return;
   }
-  background(210);
+  background(0);
   fill(0);
   strokeWeight(0);
   let mouse = createVector(mouseX, mouseY);

@@ -26,7 +26,7 @@ class Mover {
 
   }
   show() {
-    fill(map(this.position.y,0,height,300,0),0,150);
+    fill(200, map(this.position.y,0,height,300,0),map(this.position.x,0,width,300,0));
     // circle(this.position.x, this.position.y, this.radius * 2);
     vertex(this.position.x, this.position.y);
   }
