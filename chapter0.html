@@ -80,8 +80,12 @@
     <h3>Clouds from Perlin Noise</h3>
     <iframe src="./examples/00_randomness/ex_00_7perlinClouds/index.html" width=600 height=400 scrolling="no"></iframe>
     <h3>Terrain from Perlin Noise</h3>
+    <p>To create a terrain geraneration,  I have a 2d Array. Each element within the array contains a z value from -100 to 100. Then for the very front line of the array, I calculate the perlin noise for each array item using the following:</p>
+    <p><code>
+      terrain[x][y] = map(noise(xOff,yOff),0,1,-100,100);
+    </code></p>
+    <p>Where the xOff and yOff are the steps within the perlin noise function. <code>yOff</code> is based on time, while <code>xOff</code >is based on the X position within the array, stepping 0.1 step for each array position. </p>
+    <p>For the rest of the rows in the 2d array, I simply take the values from the row and assign it to the row after it, thus creating a moving effect  </p>
     <iframe src="./examples/00_randomness/ex_00_8landscape/index.html" width=600 height=400 scrolling="no"></iframe>
-
-
   </body>
 </html>

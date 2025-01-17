@@ -3,7 +3,7 @@
 // An attempt at creating a quadratic distribution
 
 let countArray = [];
-let length = 100;
+let length = 20;
 
 function setup() {
   frameRate(30);
@@ -20,7 +20,7 @@ function draw() {
   let y = 0;
   while(flag){
     x = floor(random(0,length));
-    probability = x * x;
+    probability = x**2;
     const r2 = floor(random(0,length));
     if (r2 <= probability)
       flag = false;
