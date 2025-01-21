@@ -13,6 +13,15 @@ body {
   box-sizing: border-box; /* ensures padding is included in width */
 }
 
+span.katex{ /* Make inline equations smaller */
+  font-size: 0.95em;
+}
+
+.katex-display { /* make block equations slightly larger */
+  font-size: 1.3em;
+  /* text-align: right; */
+}
+
 h1 {
   color: var(--blue);
   font-size: 40px;

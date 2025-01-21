@@ -22,6 +22,7 @@ function setup() {
 }
 
 function draw() {
+  orbitControl();
   if(!isPlaying) 
     return;
   startOff -= 0.1;

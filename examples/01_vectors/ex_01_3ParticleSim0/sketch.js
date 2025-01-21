@@ -8,7 +8,7 @@ let isPlaying = false;
 function setup() {
   frameRate(30);
   createCanvas(600, 350);
-  initParticles(3000);
+  initParticles(10);
   initPlayButton();
 }
 

@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+              onload="renderMathInElement(document.body);"></script>
+
   </head>
   <body>
     <div class="header">
@@ -40,7 +45,7 @@
     <p>In other words, Forces always occur in pairs. The two forces are equal strength but in opposite directions</p>
     <h2>Acceleration = Force / Mass</h2>
     <p>This is where the concept of Newton's second law will apply for us. If we want to apply a force to an object, we can take it's mass into account to determin how it's acceleration with react. If we have two objects with different masses, they will accelerate at different rates from the same force.</p>
-    <p>To simplify this process, we can assume an object's mass is 1. Thus Accel = F / M becomes Accel = F. </p>
+    <p>To simplify this process, we can assume an object's mass is 1. Thus \(A = F / M\) becomes \(A = F\). </p>
     <h2>Updating The Mover</h2>
     <p>The goal is to be able to apply a simple force such as <code>mover.applyForce(gravity)</code>. To do this, create an applyForce() function.</p>
     <h2>Force Accumulation:</h2>
@@ -57,8 +62,60 @@
     <iframe src="./examples/02_forces/ex_02_2vertex/index.html" width=600 height=350 scrolling="no"></iframe>
     <p>Well it's a lot sharper than I was expecting, but certainly fascinating to watch. This is with 5 points. Anything between 5 and 50 is quite pleasing. Beyond this range is either too boring or too chaotic</p>
     <iframe src="./examples/02_forces/ex_02_3vertex50/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h2>Gravity</h2>
+    <p>Even though \(\text{Acceleration} = \frac{\text{Force}} {\text{Mass}}\), when 2 objects of different mass are dropped on earth, they fall at the same speed. They have the same acceleration. This is because the the force that an object feels from the earth is of the formula: \(F = \frac{G m_1 m_2}{r^2}\). Thus when we calculate acceleration, the Mass of the object cancels out, leaving only the mass of the planet. So when we calcuate the force of gravity on a falling object, and we want to use <code>applyForce()</code>, we need to include the mass in calculating the force vector.</p>
+    \[
+    \begin{align}
+    F = G \frac{m_1 m_{planet}}{r^2} \\
+    A = \frac{F}{m_1}\\
+    A = G \frac{m_1 m_{planet}}{r^2} \frac{1}{m_1}\\
+    A = G \frac{m_{planet}}{r^2}\\
+    A = g\\
+    \end{align}
+    \]
+    
+    <p>Lets test this out with having 2 planets of different masses, and an object traveling around both of them</p>
+    <h3>Force of Gravity</h3>
+    <p>
+    Until now I have yet to attempt to simulate a natureal force using SI units. Here, I've attempted to recreate the orbiting behaviour for a moon massed object to orbit the earth. I'm using Equation (3) from above to model the movement of each planet. 
+    </p>
+    <p>The mass and size of the objects are to scale, with the following data:</p>
+    \[
+    \begin{aligned}
+    F &= G \frac{m_1 m_{planet}}{r^2}\\
+    G &= 6.67430e-11 (\text{Grav Constant})\\
+    m_1 &= 7.347e22\\
+    m_2 &= 5.927e24\\
+    r_1 &= 1737e3\\
+    r_2 &= 5.378e6\\
+    \text{meters/pixel ratio} &= 5e5\ \frac{meters}{pixel}
+    \end{aligned}
+    \]
+    <p>Minor notes on the Simulation: When a moon touches the planet, the moon is removed from the simulation, </p>
+    <p>The main logic of the calculations is held within the <code>calcGravForce</code> function:</p>
+    <pre> <code>
+function calcGravForce(element){
+  let force = createVector();
+  for (let i = 0; i < planets.length; i++) {
+    // claculate distance and direction
+    let distance = p5.Vector.sub(planets[i].position, element.position).mult(mPpx); //metersPerPixel
+    let forceMag = gravConst*planets[i].mass*element.mass / distance.mag()**2; // Force magnitude
+    force = distance.setMag(forceMag);
+    element.applyForce(force);
+    force.mult(0); // reset the vector for next planet
+  }
+}
+    </code> </pre>
+    <p>I should note that there is no attraction between moons. Only moon to planet.</p>
+    <iframe src="./examples/02_forces/ex_02_4planetGravity/index.html" width=600 height=350 scrolling="no"></iframe>
 
+    <p>It's interesting to see the orbital behaviour be so similar to real life. As an orbiting body mores away from the planet, it moves significantly slower, as it's kinetic energy is transfered to potential energy. Similarly, larger orbit move slower while smaller orbits move much faster. </p>
+    <p>According to Keplers laws, all orbits should be proper ellipses, with the Earth one of the two foci. I'm not sure if these objects are drawing out perfect ellipses, since many orbits appear to be changing pattern, but it would be interesting to look into this further. This makes sense, since the gravitational force is the key force acting on planetary bodies. Thus this should be a decent simulation in which other properties of orbits can be derived. </p>
+    <p>As a side note. it's interesting that when an orbit is too close to the planet, the orbit slowly changes position. The shape of the ellipse seems to stay the same, but the orbit rotates about the axis with the planet at the center. When the satellites are allowed to enter within the radius of the earth, this effect is greatly amplified, seeming to accelerate, and almost create energy from nowhere. I wonder what the reason for this is. </p>
+    <p>Perhaps I could calculate the energy of the object and have that print to the console. Technically the total energy (Kinetic + Potential) should never change. Maybe if I have more time.</p>
+    <iframe src="./examples/02_forces/ex_02_5planetGravity2/index.html" width=600 height=350 scrolling="no"></iframe>
   </body>
+
 
 </html>
 <!--Physical Sciences. No chem, EASC and PHys-->
