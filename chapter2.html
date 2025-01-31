@@ -52,15 +52,19 @@
     <p>We want to be able to apply multiple forces to the object. Thus we need to have a net force that we modify whenever we add forces to it. Then this net force will be applied to the acceleration. We can have 1, 10, or 100 forces. The only force that matters to our acceleration is the net force.</p>
     <h2>Exercise 2.1: Multiple forces</h2>
   <p>Here the balls are experiencing gravity, which is a constant force with equal effect on each ball. Additionally, when the mouse is clicked, the balls feels a force towards the mouse. This gravitational force is based on the mass of the ball, which is being proportional to the shapes radius, which is randomly generated from 5 - 10</p>
+    <h4>2.0: Mass, Gravity, and Mouse Attraction</h4>
     <iframe src="./examples/02_forces/ex_02_0applyForce/index.html" width=600 height=350 scrolling="no"></iframe>
     <h3>Force from Walls</h3>
     <p>In the canvas below, the walls push on each mover object with a force: <code>Canvas_size / distance_to_wall</code>. Canvas_size is the canvas hight for the y direction and width for the x direction. this causes them to nicely orbit around the center, as they are each getting pushed from all sides.</p>
     <p>Additionally, when clicked the mouse exerts an outwards force that pushes the objects away from the mouse. The idea of a flux was used, with a constant energy being output but as the distance from the mouse grows, the force disapates according to the equation: <code>Force / (PI*r^2)</code> with r being the distance from object to mouse.</p>
 
+    <h4>2.1: Pushing Force from Walls</h4>
     <iframe src="./examples/02_forces/ex_02_1wind/index.html" width=600 height=350 scrolling="no"></iframe>
     <p>In the following, Instead of drawing a circle for each, I'm placing a vertex point for a shape. I wonder it will look similar to a lava lamp</p>
+    <h4>2.2: Force from Walls: 5 Vertices</h4>
     <iframe src="./examples/02_forces/ex_02_2vertex/index.html" width=600 height=350 scrolling="no"></iframe>
     <p>Well it's a lot sharper than I was expecting, but certainly fascinating to watch. This is with 5 points. Anything between 5 and 50 is quite pleasing. Beyond this range is either too boring or too chaotic</p>
+    <h4>2.3: Force from Walls: 50 Vertices</h4>
     <iframe src="./examples/02_forces/ex_02_3vertex50/index.html" width=600 height=350 scrolling="no"></iframe>
     <h2>Gravity</h2>
     <p>Even though \(\text{Acceleration} = \frac{\text{Force}} {\text{Mass}}\), when 2 objects of different mass are dropped on earth, they fall at the same speed. They have the same acceleration. This is because the the force that an object feels from the earth is of the formula: \(F = \frac{G m_1 m_2}{r^2}\). Thus when we calculate acceleration, the Mass of the object cancels out, leaving only the mass of the planet. So when we calcuate the force of gravity on a falling object, and we want to use <code>applyForce()</code>, we need to include the mass in calculating the force vector.</p>
@@ -74,7 +78,20 @@
     \end{align}
     \]
     
-    <p>Lets test this out with having 2 planets of different masses, and an object traveling around both of them</p>
+    <h3>Simplified Attraction</h3>
+    <p>To start, I will simulate a simplitified version of gravitational attraction, and then move to attempt a more accurate representation</p>
+    <p>Additionally, I've contrained the radius to the bounds of 5 - 10 using <code>distance = constrain(distance, 4, 10);</code> The reason for this is that it ensures we do not run into problems regarding dividing by 0. I've used a minimum value of 4 here to prevent the accelration from being to large, and sending it off the screen. A max of 10 ensures that there is still a force felt as the mover gets further from attractor.</p>
+    
+    <p>Constants are not essential for modelling within a p5 canvas, as distances are all relative. Because of this, we can set our gravConst to whatever "feels" best for now. </p>
+
+
+    <h4>Gravitational Atttractor with 1 Mover</h4>
+    <iframe src="./examples/02_forces/ex_02_8simpleGravity/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>Click on the green attractor to move it around the canvas.</sub>
+    <p>In the following, I've set the number of mover objects to 1000 and reduced their radius and mass. Quite fascinating! It's interesting that most follow the pattern, but slowly they break off from the rest of the group.</p>
+    <h4>Gravitational Atttractor with 1000 Movers</h4>
+    <iframe src="./examples/02_forces/ex_02_9simpleGravity1000/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>Click on the green attractor to move it around the canvas.</sub>
     <h3>Force of Gravity</h3>
     <p>
     Until now I have yet to attempt to simulate a natureal force using SI units. Here, I've attempted to recreate the orbiting behaviour for a moon massed object to orbit the earth. I'm using Equation (3) from above to model the movement of each planet. 
@@ -107,15 +124,61 @@ function calcGravForce(element){
 }
     </code> </pre>
     <p>I should note that there is no attraction between moons. Only moon to planet.</p>
+    <h4>2.4: Earth - Moon Simulation</h4>
     <iframe src="./examples/02_forces/ex_02_4planetGravity/index.html" width=600 height=350 scrolling="no"></iframe>
 
     <p>It's interesting to see the orbital behaviour be so similar to real life. As an orbiting body mores away from the planet, it moves significantly slower, as it's kinetic energy is transfered to potential energy. Similarly, larger orbit move slower while smaller orbits move much faster. </p>
-    <p>According to Keplers laws, all orbits should be proper ellipses, with the Earth one of the two foci. I'm not sure if these objects are drawing out perfect ellipses, since many orbits appear to be changing pattern, but it would be interesting to look into this further. This makes sense, since the gravitational force is the key force acting on planetary bodies. Thus this should be a decent simulation in which other properties of orbits can be derived. </p>
+    <p>According to Keplers laws, all orbits should be proper ellipses, with the Earth one of the two foci. It appears as though these orbits are somewhat accurate. This makes sense, since the gravitational force is the key force acting on planetary bodies. Thus this should be a decent simulation in which other properties of orbits can be derived. </p>
     <p>As a side note. it's interesting that when an orbit is too close to the planet, the orbit slowly changes position. The shape of the ellipse seems to stay the same, but the orbit rotates about the axis with the planet at the center. When the satellites are allowed to enter within the radius of the earth, this effect is greatly amplified, seeming to accelerate, and almost create energy from nowhere. I wonder what the reason for this is. </p>
     <p>Perhaps I could calculate the energy of the object and have that print to the console. Technically the total energy (Kinetic + Potential) should never change. Maybe if I have more time.</p>
+    <h4>2.5: Earth - Moon Simulation. No Collision Removal</h4>
     <iframe src="./examples/02_forces/ex_02_5planetGravity2/index.html" width=600 height=350 scrolling="no"></iframe>
   </body>
+  <h1>Modeling Force Formulas</h1>
+  <h2>Friction</h2>
+  <p>Friction \(\vec{f} = -\mu N \hat{v}\) converts an objects kinetic energy into another type, resulting in slowing of the object. Thus it's a dissipative force.</p>
+  <p>Here \( \mu \) is the coefficient of friction, N is the normal force, and \(\hat{v}\) is the velocity unit vector, used to denote the velocity's direction.</p> 
+  <p>The normal force's magnitude is determined by the angle at which the resting plane and gravtiy intersect. Thus we can rewrite N as \(N = mg\cdot cos(\theta)\) resulting in a final formula of </p>
+  <p>\[\vec{f} = -\hat{v} \mu mg \cdot cos(\theta)\]</p>
+ <p>The key force caluclation is as follows:</p> 
+ <pre><code>
+function calcFrictionForce(element){
+  let c = 0.09;
+  let friction = element.velocity.copy();
+  friction.mult(-1);
+  friction.setMag(c * element.mass * 9.81);
+  element.applyForce(friction)
+} </code></pre>
+ <p>When the simulation is run, it is clearly inaccurate. The box begins to oscillate and continue to move in one direction or the other. I'm not sure why this. Likely it has to do with the force of friction pushing the object's velocity past 0 to the other direction, and this precess repeating itself. I haven't found a fix for this yet.</p>
+ <p>Additionally, when the object has a mass of 2 kg with a starting speed of 20m/s it stops almost immidiately, despite having the friction coeefecient of 0.09, which is supposed to be ice on ice.</p>
+    <h4>2.6: Friction</h4>
+    <iframe src="./examples/02_forces/ex_02_6friction/index.html" width=600 height=350 scrolling="no"></iframe>
 
+    <h2>Fluid Resistance</h2>
+    <p>Fluid resistance is another form of friction, with the following formula:</p>
+    \[
+      \vec{F}_d = -\frac{1}{2}\rho v^2 AC_d \hat{v}
+    \]
+    <p>To create a quick example, well use water, \(density = 1000\ kg / m^3\) with cubes of different cross sectional areas. \(C_d\) is the drag coefficient of the object in the fluid. For our purposes well set it to 1. For further simplification, we are ignoring cross sectional area</p>
+    <p>Here I've created a liquid class that checks if any objects are inside it, then if they are, it applies the fluid drag force to the object. The Smaller objects in the simulation travel slower through the liquid. This comes from acceleration = Force / Mass. Since their mass is smaller, the acceleration is greater.</p>
+    <pre><code>
+  calcDragForce(mover){
+    // Calculate the force of gravity based on the equation F = G*m_1*m_2/r^2
+    let speed = mover.velocity.mag();
+    let dragMagnitude = this.c * speed * speed;
+    let dragForce = mover.velocity.copy();
+    dragForce.mult(-1);
+    dragForce.setMag(dragMagnitude);
+    return dragForce;
+  } 
+}
+    </code></pre>
+    
+  </body>
+    <h4>2.7: Fluid Friction</h4>
+    <iframe src="./examples/02_forces/ex_02_7fluidFriction/index.html" width=600 height=350 scrolling="no"></iframe>
+    <sub>Click to reset the boxes</sub>
+    
 
 </html>
 <!--Physical Sciences. No chem, EASC and PHys-->
