@@ -10,7 +10,7 @@ function setup() {
   createCanvas(600, 350);
   box = new Mover(0,height/2, 2, 40);
   // init a force on the box
-  box.applyForce(createVector(20,0))
+  box.applyForce(createVector(40,0))
   initPlayButton();
 }
 
@@ -49,10 +49,16 @@ function togglePlay() {
 }
 
 function calcFrictionForce(element){
+  let frictionThreshold = 0.2;
   // Calculate the force of gravity based on the equation F = G*m_1*m_2/r^2
-  let c = 0.09;
+  if (element.velocity.mag() < frictionThreshold) {
+    element.velocity.setMag(0);
+    return
+  }
+  let c = 0.05;
   let friction = element.velocity.copy();
   friction.mult(-1);
   friction.setMag(c * element.mass * 9.81);
   element.applyForce(friction)
+  // element.velocity.mult(0.97)
 } 

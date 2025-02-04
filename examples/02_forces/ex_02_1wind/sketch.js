@@ -6,13 +6,16 @@ let isPlaying = false;
 let particles = [];
 let particleCount = 20;
 let gravity;
-let windForce = 1000; //10 joules of energy from wind
+let windForce = 100000; //10 joules of energy from wind
+let deltaTime = 0;
+let lastTime = 0;
 
 function setup() {
-  frameRate(30);
+  frameRate(60);
   createCanvas(600, 350);
   initParticles(particleCount);
   gravity = createVector(0,0.9);
+  lastTime = millis(); // init lastTime
 
   // create a play button
   initPlayButton();
@@ -22,6 +25,9 @@ function draw() {
   if (!isPlaying){
     return;
   }
+  let now = millis();
+  deltaTime = (now - lastTime) / 1000 // convert ms to seconds
+  lastTime = now;
   background(210);
   strokeWeight(0);
   fill(0);
@@ -65,11 +71,11 @@ function togglePlay() {
 function wallForce(element) {
   // create a force pushing out form each wall
   // top
-  element.applyForce(createVector(0,height/(element.position.y)));
+  element.applyForce(createVector(0,100 * height/(element.position.y)));
   // bottom
-  element.applyForce(createVector(0, -height/(height - element.position.y)));
+  element.applyForce(createVector(0, 100 * -height/(height - element.position.y)));
   // left
-  element.applyForce(createVector(width/(element.position.x), 0));
+  element.applyForce(createVector(100 * width/(element.position.x), 0));
   // right
-  element.applyForce(createVector(-width/(width - element.position.x), 0));
+  element.applyForce(createVector(100 * -width/(width - element.position.x), 0));
 }

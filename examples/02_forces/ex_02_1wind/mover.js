@@ -5,21 +5,26 @@
 class Mover {
   constructor(x,y,radius) {
     this.position = createVector(x, y);
-    this.velocity = createVector(random(-5,5), random(-5,5));
+    this.velocity = createVector(random(-50,50), random(-50,50));
     this.acceleration = createVector(0,0);
     this.radius = radius;
     this.mass = this.radius;
   }
   applyForce(force) {
-    this.acceleration.add(p5.Vector.div(force,this.mass)).limit(5);
+    this.acceleration.add(p5.Vector.div(force,this.mass));
   }
   applyGravity(force) {
     this.acceleration.add(force).limit(5);
 
   }
   update() {
-    this.velocity.add(this.acceleration);
-    this.position.add(this.velocity);
+    // useing Delta time, where V = acceleration * deltaTime
+    let timeAccel = p5.Vector.copy(this.acceleration);
+    timeAccel.mult(deltaTime); 
+    this.velocity.add(timeAccel);
+    let timeVel = p5.Vector.copy(this.velocity);
+    timeVel.mult(deltaTime); 
+    this.position.add(timeVel);
     this.checkEdges();
     // clear acceleration vector after applied
     this.acceleration.mult(0);
