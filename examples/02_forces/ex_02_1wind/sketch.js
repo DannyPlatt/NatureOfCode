@@ -15,10 +15,10 @@ function setup() {
   createCanvas(600, 350);
   initParticles(particleCount);
   gravity = createVector(0,0.9);
-  lastTime = millis(); // init lastTime
 
   // create a play button
   initPlayButton();
+  lastTime = millis(); // init lastTime
 }
 
 function draw() {

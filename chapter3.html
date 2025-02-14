@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="Chapter 3" content="width=device-width, initial-scale=1">
+    <title>NoC: Chapter 3</title>
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+              onload="renderMathInElement(document.body);"></script>
+
+  </head>
+  <body>
+    <div class="header">
+      <h1>Chapter 3: Oscillations</h1>
+      <p>F = ma</p>
+    </div>
+    <div class="navbar">
+      <a href="./chapter0.html">Chapter0</a>
+      <a href="./chapter1.html">Chapter1</a>
+      <a href="./chapter2.html">Chapter2</a>
+      <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
+      <a href="./index.html" class="right">Home</a>
+    </div>
+    <h2>Angular Motion</h2>
+    <p>Here is just a practice in basic rotations. To get the rotation in the p5.js canvas, we must first translate the origin to the point we want to rotate about, then perform the rotation. In the following example, I have added a varying rotation speed, as well as a varying translation position, this causes it to rotate about a changing axis along the baton.</p>
+    <pre><code>
+// Translate to center of page
+translate(width/2, height/2);
+rotate(angle)
+// translate again after rotation. 
+// This moves the drawing along the x-axis
+translate(xAxisOffset, 0);
+rect(-50, -2, 100, 4);
+circle(-50, 0, 20);
+circle(50, 0, 20);
+// Update Parameters
+angle += velocity * deltaTime;
+velocity += accel * deltaTime;
+xAxisOffset += velocity * deltaTime;
+    </code></pre>
+    <p>Note that in this example we are using deltaTime. Until this point we have been simply treating each frame as a second, as recommended in the book for simplicity. However, now we can say that this baton has a constant and true angular acceleration of 4 rads/second, regardless of the framerate by setting the constant <code>let accel = 4;</code></p>
+    <h4>3.1: Spinning Baton</h4>
+    <iframe src="./examples/03_oscillations/ex_03_1baton/index.html" width=600 height=350 scrolling="no"></iframe>
+
+    <p>In the following, I've matched the angular acceleration of the mover with its linear acceleration so that the object appears to roll. </p>
+    <pre><code>
+let radius = 20
+force = 40;
+mover = new Mover(0, height/2, radius, createVector(0, 0))
+mover.acceleration = createVector(-force, 0);
+mover.angleAccel = -force/((radius));
+    </code></pre>
+    <p>It should be noted that this isn't quite right. It is strange to be using the force in this equation, as the units clearly do not cancel. If I have more time I'll look into correcting this.</p>
+    <h4>3.2: Spinning mover</h4>
+    <iframe src="./examples/03_oscillations/ex_03_2spinningMovers/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h3>Facing Movement:</h3>
+    <p>Currently all movers have been circles, this prevents having to give a direction. However, this should be fixed. We can use trig to figure out the angle of movement, and rotate the object to face that direction.</p>
+
+    \[
+    \begin{align}
+    \text{angle} = \text{arctan}\left( \frac{velocity_{y}}{velocity_x}\right)\\
+    \end{align}
+    \]
+    <h4>3.3: Facing Movement:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_3facingMovement/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h2>Simple Harmonic Motion</h2>
+    <p>Simple harmonic motion occures when an object has a restoring force that pulls the object back towards the center. This has a similar feel to an orbiting body. However, as the distance from the center increases, the restoring force increases. Thus restoring in a oscillating motion.</p>
+    <p>In the following example, I'm using sin to model the oscillation, with the passing of time as my time step. </p>
+    <pre> <code>
+  let frequency = 3; // 3 full loops every second
+  let amplitude = height/2; // Max distance from center point
+  let offset = height/2; // Move object to center of canvas
+  let yPosition = amplitude * sin(-TWO_PI * now/period) + offset;
+    </code> </pre>
+    <h4>3.4: Simple Oscillation using Sin:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_4simpleHarmonicBob/index.html" width=600 height=350 scrolling="no"></iframe>
+    <p>The next task is to add an a separate oscillation in the x direction for each of the values. I've also assigned the oscillation information to the object. </p>
+    <h4>3.5: Oscillation in X and Y:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_5simpleHarmonicBob2/index.html" width=600 height=350 scrolling="no"></iframe>
+    As a side note, this is how you create lissajous figures! In the following canvas, I've removed the central teather, reduced the size of the sphere, and removed the redrawing of the background. We should be able to see some complex lissajous figures! 
+    <h4>3.6: Lissajous Figures:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_6lissajous/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h1>Waves</h1>
+    <p>Moving on to waves. We can think of waves as a collection of oscilliating points. This can already be seen within Canvas 3.4. If we add more objects, we can see the beginnings of a wave to form. </p>
+    <p>In the following, we have a simple angle. This angle is then incremented each time it draws the next circle. By calculating our Y value from <code>y = sin(angle)</code>, we receive a value between 0 and 1 to use as our y position for each object.</p>
+    <pre><code>
+angle = startAngle;
+for (let i = 0; i < movers.length; i++) {
+  movers[i].position.y = map(sin(angle), -1, 1, 100, height - 100), 
+  movers[i].show();
+  angle += deltaAngle;
+}
+startAngle += startAngleVel;
+    </code></pre>
+    <h4>3.7: Moving Wave:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_7standingWave/index.html" width=600 height=350 scrolling="no"></iframe>
+    <p> In the following, Ive looked into wave Superposition. When waves combine, they have constructive and destructive interference. Meaning that at a certain x position, you add the y values. this resulting y value is the position of the final wave. </p>
+    <p>Example <b>3.8</b>, the 2 waves along the top are equal in amplitude and period but moving in opposite directions. the lowest, 3rd wave is the resultant wave from the top 2. this creates a standing wave, with double the amplitude of the first 2.</p>
+    <pre><code>
+  for (let i = 0; i< wave3.yValues.length; i++) {
+    wave3.yValues[i] = wave1.yValues[i] + wave2.yValues[i];
+  }
+    </code></pre>
+    <h4>3.8: Wave Superposition:</h4>
+    <iframe src="./examples/03_oscillations/ex_03_8waveClass/index.html" width=600 height=350 scrolling="no"></iframe>
+    <h1>Spring Forces</h1>
+    
+</html>
