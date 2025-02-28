@@ -87,11 +87,11 @@
 
     <h4>Gravitational Atttractor with 1 Mover</h4>
     <iframe src="./examples/02_forces/ex_02_8simpleGravity/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>Click on the green attractor to move it around the canvas.</sub>
+    <p class="description">Click on the green attractor to move it around the canvas.</p>
     <p>In the following, I've set the number of mover objects to 1000 and reduced their radius and mass. Quite fascinating! It's interesting that most follow the pattern, but slowly they break off from the rest of the group.</p>
     <h4>Gravitational Atttractor with 1000 Movers</h4>
     <iframe src="./examples/02_forces/ex_02_9simpleGravity1000/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>Click on the green attractor to move it around the canvas.</sub>
+    <p class="description">Click on the green attractor to move it around the canvas.</p>
  <h3>N - Body Problem</h3>
  <p>The orbiting isn't quite right. Due to Newtons 2nd law, every force has an equal and opposite force. Thus, our attractor should also be moving, experiencing a force and acceleration just the same as the mover object. This concept is used heavily in the exoplanet detection method of stellar wobble, where a star will have its own orbit caused from the oribiting bodies around it. This orbit can then be detected by the red and blue shifts in the incoming light.</p>
  <p>The N-body problem's younger brother, the 2 body problem, has been solved. We know how 2 objects in orbit around each other will behave. Anything beyond this though, there is no formal solution to. Therefor our simulation will be wildly inaccurate, but interesting nonetheless.</p>
@@ -196,7 +196,7 @@ function calcFrictionForce(element){
   </body>
     <h4>2.7: Fluid Friction</h4>
     <iframe src="./examples/02_forces/ex_02_7fluidFriction/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>Click to reset the boxes</sub>
+    <p class="description">Click to reset the boxes</p>
     <h2>Conculsion</h2>
     <p>If I had more time, and I probably will still do this, is look into implementing proper time steps. Currently, the simulation is purely based on frames per second, however it would be much better to have it based on time passed. This would allow creating an orbiting simulation that could model the solar system, where I can change the time step from seconds to days to months, and see the speed of the relative orbits of the different planets. I think that would be fascinating. </p>
     

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="Chapter 4" content="width=device-width, initial-scale=1">
+    <title>NoC: Chapter 4</title>
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+              onload="renderMathInElement(document.body);"></script>
+
+  </head>
+  <body>
+    <div class="header">
+      <h1>Chapter 4: Intro to Particle Systems</h1>
+    </div>
+    <div class="navbar">
+      <a href="./chapter0.html">Chapter0</a>
+      <a href="./chapter1.html">Chapter1</a>
+      <a href="./chapter2.html">Chapter2</a>
+      <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
+      <a href="./index.html" class="right">Home</a>
+    </div>
+    <h1>Why Particle Systems</h1>
+    <p>Particle systems are collections of many independent objects, each with their own physical properties. A particle system is simply the managing of these many things, and organizing them into a group. This chapter discusses the architecture and organization of particle systems, and less on looking into types of particle systems. </p>
+    <h1>Updating Units</h1>
+    <p>I've been wanting try to use si units instead of pixels within the canvas. In the following example, I've attempted to create a unit conversion system. The canvas was set to 600px by 350px. With that in mind I measured the canvas to be 9.6cm on my laptop screen. That gives a cm - pixel ratio of 6250px per meter or 62.5px per cm. I have this as a global variable that allows for unit conversion. All my values are now stored in si units, and before I draw to the canvas, I convert from si to pixels. Additionally, I've increased the canvas size to 625 by 375 which works out to 10cm by 6cm.</p>
+    <p>Admittedly, this system won't translate across different browsers and screen pixel densities, but for an individual study, this works fine for me. I wonder if there is a way to determine the screen pixel density, and use that to calculate the pixel per centimeter (pxPerCm) ratio.</p>
+    <p>Now with the proper unit conversion, the sketch below should have the 1cm ball fall at the proper 9.81m/s^2</p>
+    <h4>Sketch With Centimeter Grid</h4>
+    <iframe src="./examples/04_particles/ex_04_0unitConversion/index.html" width=625 height=375 scrolling="no"></iframe>
+
+    <h1>The Particle</h1>
+    <p>We've already looked into tracking movement, forces, and rotation of the mover object. This mover object will be the base of our particle. A few simple changes to make will be adding a lifetime condition on whether the particle is alive or dead. As we could be working with thousands of particles, we do not want to keep track of particles that are no longer relevant / in frame. For now, we'll give the particles a lifetime of 255 frames. Additionally, I'll add a boolean value to state if the particle is alive or dead</p>
+    <p>Here is the current state of the particle:</p>
+    <pre><code>
+class Particle{
+  constructor(x,y) {
+    // Linear motion
+    this.position = createVector(x, y);
+    this.velocity = p5.Vector.random2D().mult(5/pxPerCm);
+    this.velocity.y = random(-15/pxPerCm, 0); // give an initial upwards velocity
+    this.acceleration = createVector(0,0);
+    this.radius = .5 * pxPerCm;
+    this.mass = 10;
+    this.lifeTime = .6;
+    this.elapsedTime = 0;
+    this.color = [200, 10, 250];
+    // Angular Motion
+    this.angle = 0;
+    this.angleVel= random(-6, 6);
+    this.angleAccel= 0
+  }
+
+  isAlive() {
+    // Checks how long the object has been alive for and 
+    // compares to this.lifetime. All time is in seconds
+    return this.elapsedTime < this.lifeTime;
+  }
+
+  applyForce(force) {
+    this.acceleration.add(p5.Vector.div(force,this.mass));
+  }
+
+  update() {
+    // Update linear motion
+    let timeAccel = this.acceleration.copy(); // technically unecissary as accel is zeroed later
+    this.velocity.add(timeAccel.mult(deltaTime)); // Vel += Accel * deltaTime
+    let timeVel = this.velocity.copy(); // Copy to prevent modifying vector
+    this.position.add(timeVel.mult(deltaTime * pxPerMeter)); //Pos+= Vel * deltaTime * pxPerMeter
+    this.acceleration.mult(0); 
+
+    // Update Angular Motion
+    this.angleVel += (this.angleAccel* deltaTime);
+    this.angle += this.angleVel * deltaTime;
+    this.angleAccel = 0; // reset accel
+    // Decrease lifetime
+    this.elapsedTime += deltaTime;
+  }
+
+  show() {
+    push()
+    let opacity = map(this.elapsedTime, 0, this.lifeTime, 255, 0);
+    fill(this.color[0], this.color[1], this.color[2], opacity);
+    stroke(50, opacity);
+    strokeWeight(2);
+    translate(this.position.x, this.position.y)
+    rotate(this.angle);
+    circle(0, 0, this.radius * 2);
+    line(-this.radius, 0, this.radius, 0);
+    line(0, -this.radius, 0, this.radius);
+    pop();
+  }
+}
+    </code></pre>
+    <h4>The Particle</h4>
+    <iframe src="./examples/04_particles/ex_04_1particleObject/index.html" width=625 height=375 scrolling="no"></iframe>
+    <p class="description">Note that this simulation has been slowed down to 1/5 regular speed.</p>
+    <h1>Emitters, and Systems of Emitters</h1>
+    <p>Currently All these particles are being held within a simple array. I will clean this code and make an emmiter class to manage the creation and removal of particles</p>
+    <p>Now I'm able to have an emmiter class that handles all it's particles independently. I can now manage multiple emitters if the need arises</p>
+    
+    <p>Additionally, I've independently created a spawn timer system that separates the spawning rate from the frame rate. This allows me to set the spawn rate of the emitter to be based on Particles per Second. In the code, <code>particleHz</code> is 1/particleRate, and is thus the Seconds per Particle rate.</p>
+    <pre><code>
+addParticle() {
+  this.spawnTimer += deltaTime;
+  if (this.spawnTimer > this.particleHz){
+    // Each spawn of particle, decrease the spawnTimer by Hz rate
+    while(this.spawnTimer > this.particleHz) {
+      this.particles.push(new Particle(this.position.x, this.position.y));
+      this.spawnTimer -= this.particleHz;
+    }
+  }
+}
+
+    </code></pre>
+    <h4>System of Emitters: Click the Screen to Spawn Emitters</h4>
+    <iframe src="./examples/04_particles/ex_04_2particleEmitter/index.html" width=625 height=375 scrolling="no"></iframe>
+    <p class="description">Emitters running at a spawn rate of 200 particles per second. Time and gravity are at standard rates</p>
+    <h2>Inheritence</h2>
+    <p>The following example looks briefly into the idea of using inheritence. This is valuable as we can take the base properties from the particle object, and expand upon them. In the following example, I've created a confetti subclass that draws squares instead of circles. </p>
+    <h4>Particle System with Inheritance: Confetti!</h4>
+    <iframe src="./examples/04_particles/ex_04_3inheritance/index.html" width=625 height=375 scrolling="no"></iframe>
+    <h1>Applying Forces to Particles</h1>
+    <p>Now that I have my emitter class, I may want to effectively apply a force to the particles. Naturally, there are many different ways of accomplishing this. If we want to apply a generic force to all the particles, we can add an <code>applyForce()</code> method to the emitter class, which allows us to apply forces from the sketch.js draw loop. In the following example, I have a gravity force that accelerates the objects uniformly regardless of mass, and a wind force that blows to the left. The rectangles are lighter, and consequently get pushed further by the wind.</p>
+    <p>In the following I've redone the pixel to meter ratio to 625px/meter. This means the width of this canvas is 1 meter. Additionally, time is half speed.</p>
+    <h4>Applying Forces to Particles</h4>
+    <iframe src="./examples/04_particles/ex_04_4forces/index.html" width=625 height=375 scrolling="no"></iframe>
+    <p>Note: I thought I was being fancy however, my conversions are off and something's not right. Everything moves too fast. I'll need to fix this if I get a chance.</p>
+    <h1>Particle Systems with Repellers</h1>
+    <p>Let's add interaction by adding a repeller object. This will push away objects that get too close. The force experienced on each particle by the repeller will have to calculated individually. </p>
+    <p>I've created a new repeller class:</p>
+    <pre><code>
+class Repeller {
+  constructor(x, y){
+    this.position = createVector(x, y);
+    this.power = 150;
+  }
+  show() {
+    push();
+    stroke(0);
+    fill(127);
+    circle(this.position.x,. this.position.y, 32);
+    pop();
+  }
+  repel(particle) {
+    let force = p5.Vector.sub(this.position, particle.position);
+    let distance = force.mag():
+    distance = constrain(distance, 5, 50); // Prevent extreme cases
+    let strength = -1 * this.power / (distance * distance);
+    force.setMag(strength);
+    return force;
+  }
+}
+    </code></pre>
+    <p>Then as we loop through the particle list, we calculate the force applying to each particle.</p>
+    <h4>Applying Forces to Particles with Repellers: Click Screen</h4>
+    <iframe src="./examples/04_particles/ex_04_5repeller/index.html" width=625 height=375 scrolling="no"></iframe>
+    <h2>Application of Particle Systems: Smoke</h2>
+    <p>
+    Now that I've looked into how to organize particle systems, and applying forces to them, we'll look at one example of where we can use this: Simulating smoke. This is a very easy example and nothing too complex. Here I've taken the particle, increased the size, and decreased it's alpha value. Finally, I added a blending option built into p5.js <code>blendMode(ADD);</code> which causes the screen to render with adaptive blending, which simply takes the pixel values of the particle layers and adds them together. 
+    </p>
+    <h4>Smoke Texture: Click on Screen</h4>
+    <iframe src="./examples/04_particles/ex_04_6smoke/index.html" width=625 height=375 scrolling="no"></iframe>
+    <h1>Conclusion:</h1>
+    <p>This marks the end of chapter 4. As stated at the start, this chapter focused more on how to implement, setup and manage a particle system more so than how to use systems within graphics or physics implementations. If I had more time I'd like to look into more simulations that take the particle systems and use them. There is a fascinating example of particle systems interacting with music called <a href="https://roberthodgin.com/project/magnetosphere">magnetosphere</a> by Robert Hodgin. It would be very fun to try and recreate a simplified version of these effects.</p>
+</html>
+

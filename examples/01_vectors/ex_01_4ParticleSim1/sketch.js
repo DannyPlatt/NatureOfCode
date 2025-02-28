@@ -19,6 +19,7 @@ function draw() {
     return;
   }
   background(210);
+  text ("fps: " + round(frameRate()), 10,20);
   strokeWeight(0);
   fill(0);
   text ("fps: " + round(frameRate()), 10,20);

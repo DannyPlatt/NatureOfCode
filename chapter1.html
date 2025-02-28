@@ -34,12 +34,12 @@
     </ul>
     <h2>Bouncing ball With Vectors</h2>
     <iframe src="./examples/01_vectors/ex_01_0vectorBouncingBall/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>Just a note for future drawings. Set a class object as a global variable using <code>let ball;</code>. Then within the setup function, assign a class object to the variable: <code>ball = new Ball();</code></sub>
+    <p class="description">Just a note for future drawings. Set a class object as a global variable using <code>let ball;</code>. Then within the setup function, assign a class object to the variable: <code>ball = new Ball();</code></p>
     <p>The above example is not without flaws. Often times the ball will get stuck in a wall. I imagine this is because the step it takes in it's velocity is larger than 1 pixel, thus if it steps past the bounds the velocity changes, but it's position is not reset, thus the volocity flips again in the next round, keeping it stuck in an oscillation</p>
     <h2>Textbook Exercise 1.2: 3D bouncing ball</h2>
     <p>Here I've experimented with using the p5.js 3d elements</p>
     <iframe src="./examples/01_vectors/ex_01_1BouncingBall3D/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>In this canvas, you can left or right click, and scroll to manipulate the window. This is simply done using p5.js builtin <code>orbitControl()</code> within the draw function.</sub>
+    <p class="description">In this canvas, you can left or right click, and scroll to manipulate the window. This is simply done using p5.js builtin <code>orbitControl()</code> within the draw function.</p>
     <h2>Vector Methods</h2>
     <ul>
       <li> add()</li>
@@ -75,10 +75,10 @@
     <p>I'm limiting both the acceleration and the velocity magnitudes to create this natural flow effect. if I were to not limit the magnitudes, the result is just chaos.</p>
     <p>Within the mover object, there is an update function that adds the acceleration to velocity, and velocity to position. It also flips the velocity if a wall has been hit.</p>
     <iframe src="./examples/01_vectors/ex_01_3ParticleSim0/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>Here we are calculating the distance from ball to mouse in both x and y directions and using this as our acceleration x and y values. This is why we see the + sign forming, since the acceleration points towards both the x and y values.  </sub>
+    <p class="description">Here we are calculating the distance from ball to mouse in both x and y directions and using this as our acceleration x and y values. This is why we see the + sign forming, since the acceleration points towards both the x and y values.  </p>
     <p>While programming motion, it's helpful to try and accomplish the desired effect without changing position and velocity directly, but rather creating forces to do this work for us.</p>
     <iframe src="./examples/01_vectors/ex_01_4ParticleSim1/index.html" width=600 height=350 scrolling="no"></iframe>
-    <sub>In this the acceleration direction points directly to the mouse</sub>
+    <p class="description">In this the acceleration direction points directly to the mouse</p>
 
 
   </body>
