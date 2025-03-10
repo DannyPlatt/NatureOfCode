@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="Chapter 4" content="width=device-width, initial-scale=1">
+    <title>NoC: Chapter 4</title>
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+              onload="renderMathInElement(document.body);"></script>
+
+  </head>
+  <body>
+    <div class="header">
+      <h1>Chapter 5: Autonomous Agents</h1>
+    </div>
+    <div class="navbar">
+      <a href="./chapter0.html">Chapter0</a>
+      <a href="./chapter1.html">Chapter1</a>
+      <a href="./chapter2.html">Chapter2</a>
+      <a href="./chapter3.html">Chapter3</a>
+      <a href="./chapter4.html">Chapter4</a>
+      <a href="./chapter5.html">Chapter5</a>
+      <a href="./chapter6.html">Chapter6</a>
+      <a href="./index.html" class="right">Home</a>
+    </div>
+    <h1>The Agent</h1>
+    <p>In this chapter were going to be looing into giving different objects within the canvas the ability to 'think'. In AI, the thinking object is refered to as an Agent.</p>
+    <p>An Autonomous agent is something that makes it's own choices within it's environment. Up until now, I've had forces acting on objects, but these objects simply move because of the force. In this chapter we'll look into having the objects choose to move around, like a moth drawn to a flame, or fish evading a shark.</p>
+    <h2>Three Key Components</h2>
+    <h3>A Limited Ability to Perceive its environment</h3>
+    <p>An agent takes in information from its surroundings, however we decide how much information it takes in. Is it omnipotent, knowing everything of the entire scene or does it have a limited knowlege, perhaps it only knows about other objects within a certain radius.</p>
+    <h3>Decides an Action</h3>
+    <p>We will have the actions be mainly forces. The environment may tell the agent there's a predator, and the action will be a force to evade it in the opposite direction.</p>
+    <h3>An Autonomous Agent has no Leader</h3>
+    <p>This is not as important in our context, but will still be implemented. However, sometimes this may be broken, for example if we are examining group behaviours.</p>
+    <h2>Vehicles and Steering</h2>
+    <p>Based on the work from computer scientist Craig Reynolds, we will be calling our Autonomous agent class <i>Vehicle</i>. The Vehicle class will build upon the previous classes.</p>
+    <p> Vehicles have three layers:</p>
+    <ol>
+      <li>
+        <p><b>Action Selection:</b> A vehicle has a goal and chooses actions based on this goal.</p>
+      </li>
+      <li>
+        <p><b>Steering:</b> Once an action has been selected, a steering force is applied to the object. Reynolds devevloped a simple steering force formula: Steering force = desired velocity - current velocity.</p>
+      </li>
+      <li>
+        <p><b>Locomotion:</b> For us, locomotion will mostly be ignored. The shape of our vehicles doesn't change. There is no stepping, flapping, or swimming animation. </p>
+      </li>
+    </ol>
+    <p>We'll be looking at individual steering behaviours first that can be combined into more complex thinking. </p>
+    <h1>The Steering Force</h1>
+    <p>To calculate the steering force, make use of Raynolds simple steering algorithm. First we determine the direction of the target from the location of the vehicle: <code> let desired = p5.Vector.sub(target, this.position); </code> This creates a vector that points towards the target. We then scale the desired vector by a certain amount. Here I will be setting the magnitude as the maxSpeed value. Lastly we implement the algorith: <code>let steer = p5.Vector.sub(desired, this.velocity);</code>. The advantage of this steering algorithm is that it takes into account the current state of the agent. This allows the steering force to compensate for the velocity, adding a lifelike quality to the simulation. This is what causes the vehicle to ocassionaly miss the target, and have to loop around for a second or third pass to reach it.</p>
+    <pre><code>
+seek(target) {
+  let desired = p5.Vector.sub(target, this.position);
+  desired.setMag(this.maxSpeed)
+  let steer = p5.Vector.sub(desired, this.velocity);
+  steer.mult(2).limit(this.maxForce);
+  this.applyForce(steer);
+}
+    </code></pre>
+
+    <p>In the following canvas, I've implemented 2 agents to show the different steering styles</p>
+    <ol>
+      <li><b>Purple:</b> Directly takes target direction (desired) to be it's force: <code> this.applyForce(desired); </code></li>
+      <li><b>White:</b> Uses the Raynolds steering algorithm described above.</li>
+    </ol>
+    <p>The key difference between the two is that the white object takes into account its own velocity as it steers. This can be seen in that the white agent corrects faster when it misses the target, while the purple agent's turning radius is much larger, almost orbital like.</p>
+    <p>Lastly, I've drawn the steer force as a red vector for each of the vehicles. This is interesting because we can see standard (purple) agent always has its seek force pointing towards the target. This is in contrast to the Raynolds (white) agent whcih has more of a corrective line, with it's seek vector off from the target.</p>
+    <p>One odd behaviour is once the white agent aligns it's path with the target, it's seek vector </p>
+
+    <h4>A Little Agents: Raynolds VS Standard Steering</h4>
+    <iframe src="./examples/05_agents/ex_05_0agent0/index.html" width=625 height=450 scrolling="no"></iframe>
+
+    <h3>Adaptation</h3>
+    <p>In the following, I've branched out on my own and tried implementing a little bit of an adaptive aspect to the simulation. Each vehicle now has a size and speed. Every time the vehicle collects the "food" it grows and its speed decreases. If the vehicle has not collected food for 10 seconds, it's size decreases, and it's speed increases. It's interesting that they all approach an average size larger than the starting size, but it's clear that once it get's too large, it has to come back down to a smaller, more agile size.</p>
+
+    <h4>Adaptive Agents</h4>
+    <iframe src="./examples/05_agents/ex_05_1adaptingAgents/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h3>Arrival</h3>
+    <p>At this point our agent simply tries to move towards the target as fast as possible. Now let's have it slow down as it approaches the target; an arrival. To do this, we determine the distance from the vehicle to target, and if that distance is less than a preset radius (200px) from the target, we match the magnitude of the speed to the distance from the target: </p>
+    <pre><code> let magnitude = map(distance, 0, 100, 0, this.maxSpeed); </code></pre>
+    <h4>Arrival</h4>
+    <iframe src="./examples/05_agents/ex_05_2arrival/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h3>Pursuit</h3>
+    <p>Up until this point, the steering behaviour has been based on the targets position only. However, it makes more sense for our agent to predict where the object will be based on its position and velocity. This way the agent is guessing where the target will be in the next x number of frames.</p>
+    <p>For this algorithm, we simply take the velocity of the target, and it to the target's position. Finally, we run the seek steering behaviour on this new location</p>
+    <pre><code>
+let target = vehicle.position.copy();
+let velocity = vehicle.velocity.copy();
+let steer = this.seek(target.add(velocity));
+return steer;
+    </code></pre>
+    <p>Additionally, I've created a condition where if the agent is within a certain radius of the object, it changes it's steering behaviour from pursuit to seek, as pusue only ever point infront of the object. This behaviour isn't perfect, perhaps it could be improved by having a linear interpretation of the two positions, and as it gets closer, it favours the true position vs the predicted version</p>
+    <p>Note that it doesn't predict bounces, which decreases the effectiveness of the agent.</p>
+    <h4>Pursuit: Predicted Location With Condition</h4>
+    <iframe src="./examples/05_agents/ex_05_3pursue/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h3>Adding Lerp</h3>
+    <p>Adding a linear interpretation between the the predicted position: <code>pursue = target.position + target.velocity</code> and the target position: <code>targPos = target.position</code> we now get a smooth aligning of the predicted position with the object position, as the mover arrives.</p>
+    <pre><code>
+  let mapping = map(distance, 0, searchRadius, 0, 1, true);
+  targDist.lerp(pursue, mapping);
+  let steer = this.seek(targDist);
+    </code></pre>
+    <h4>Pursuit: Predicted Location With Lerp</h4>
+    <iframe src="./examples/05_agents/ex_05_4pursueLerp/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h3>Flee and Evade:</h3>
+    <p>Flee and Evade are the opposite steering behaviours of Seek and Pursue respectively. While Flee causes the object just to move away from where the target is, Evade moves the object away from where the target will be. </p>
+    <h4>Flee</h4>
+    <iframe src="./examples/05_agents/ex_05_5flee/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h4>Evade</h4>
+    <iframe src="./examples/05_agents/ex_05_6evade/index.html" width=625 height=450 scrolling="no"></iframe>
+</html>
+

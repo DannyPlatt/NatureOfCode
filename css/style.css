@@ -48,6 +48,11 @@ h4 {
 p {
   font-size: 25px;
 }
+
+ol {
+  font-size: 25px;
+}
+
 pre code {
   font-size: 20px;
 }
