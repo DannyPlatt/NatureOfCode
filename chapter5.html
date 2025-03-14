@@ -113,7 +113,103 @@ return steer;
     <p>Flee and Evade are the opposite steering behaviours of Seek and Pursue respectively. While Flee causes the object just to move away from where the target is, Evade moves the object away from where the target will be. </p>
     <h4>Flee</h4>
     <iframe src="./examples/05_agents/ex_05_5flee/index.html" width=625 height=450 scrolling="no"></iframe>
+    <p>In the following:<br><b>Blue dot:</b> is the blue's prediction of where the red preditor will be moving to <br><b>Red dot:</b> is the Red's prediction of where the blue prey is going to move to</p>
     <h4>Evade</h4>
     <iframe src="./examples/05_agents/ex_05_6evade/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h2>Wandering</h2>
+    <p>Suppose we want our agent to wander about the canvas randomly. Wandering is a type of random steering which has some long-term order. The steering direction in one frame is related to the steering direction in the next frame. This produces smoother random movement than simply generating a random x-y, direction.</p>
+    <p>Reynolds achieves this using an interesting solution. First the vehicle predits its own future position as a fixed distance in front of it. Then a circle is drawn around this future position, and a random point along the circumference of the circle is selected. This point then moves randomly to the left or right around the circle, producing a change in steering. </p>
+    <h4>Wander</h4>
+    <iframe src="./examples/05_agents/ex_05_7wander/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h1>Flow Field Following</h1>
+    <p>Flow fields can be thought of a grid canvas, where every grid has an errow pointing in a certain direction. As the vehicle moves around the canvas, whatever arrow it is above, becomes its velocity</p>
+    <p>Let us create a class that describes the flow field</p>
+    <pre><code>
+class FlowField {P
+  constructor() {
+    this.resolution = 10;
+    this.cols = floor(width/this.resolution);
+    this.rows = floor(height/this.resolution);
+    this.field = new Array(this.cols);
+    for (let i = 0; i < this.cols; i++) {
+      this.field[i] = new Array(this.rows);
+    }
+  }
+}
+    </code></pre>
+    <h4>Flowfield Initialization Using Perlin Noise</h4>
+    <iframe src="./examples/05_agents/ex_05_8flow/index.html" width=625 height=450 scrolling="no"></iframe>
+
+    <h1>Group and Flocking Behaviours</h1>
+    <p>Flocking is a group behaviour found in many creatures. Reynolds created a flocking simulation back in 1986. This will bring together many of the concepts within this chapter.</p>
+    <p>Rules governing flocking:</p>
+    <p><b>Separation:</b> Steer to avoid colliding with neighbors</p>
+    <p><b>Alignment:</b> Steer in the same direction as neighbors</p>
+    <p><b>Cohesion:</b> steer towards the center of the neighbors</p>
+    <h4>Flocking, No Optimization</h4>
+    <iframe src="./examples/05_agents/ex_05_9flock/index.html" width=625 height=450 scrolling="no"></iframe>
+    <h1>Algorithm Effeciency</h1>
+    <p>Group behaviour get's expensive very quickly. As we are checking each object with each other object, at minimum it is O(N^2)</p>
+    <p>However, there are ways to have them only look at the other objects in their nearby vicinity</p>
+    <h2>Spatial Subdivision</h2>
+    <h3>Bin-Lattice Subdivision (Binning)</h3>
+    <p>In binning, we divide the canvas into a grid of squares. For each object, we only check the other objects within the same bin.</p>
+    <p>This involves creating a list of lists of lists. </p>
+    <pre><code>
+    let boids = [];
+    let resolution = 40 //40 pixels per cell
+    let cols = floor(width / resolution)
+    let rows=  floor(height / resolution)
+    let grid = new Array(cols);
+    for (let i = 0; i < grid.length; i++){ 
+      grid[i] = new Array(rows);
+      for (let j = 0; j < grid.length; j++){
+        grid[i][j] = []
+      }
+    }
+    </code></pre>
+    <p>Then every time we cycle through our <code>draw()</code> function, we go through all the boids, and place them in their appropriate cell</p>
+    <pre><code>
+    function draw() {
+  // Each frame, the grid is reset to empty arrays.
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      grid[i][j] = [];
+    }
+  }
+
+  // Place each boid into the appropriate cell in the grid.
+  for (let boid of flock.boids) {
+    // Find the right column and row.
+    let column = floor(boid.position.x / resolution);
+    let row = floor(boid.position.y / resolution);
+    // Constrain to the limits of the array.
+    column = constrain(column, 0, cols - 1);
+    row = constrain(row, 0, rows - 1);
+    // Add the boid.
+    grid[column][row].push(boid);
+  }
+    </code></pre>
+    <h4>Flocking with Binning</h4>
+    <iframe src="./examples/05_agents/ex_05_10binning/index.html" width=625 height=450 scrolling="no"></iframe>
+    <p>Within the console log, I'm printing out the number of loops the code enters per frame. For 120 Boids:</p>
+    <p><b>Standard flocking:</b> 43,000 loops</p>
+    <p><b>Flocking with Binning:</b> 5,000 - 10,000 loops</p>
+    <p>Clearly the binning is doing its job. However, binning does not adapt to the density of the objects. For example, in the first few frames, all the boids spawn at the same location. Thus, the algorithm is just as inefficient as standard flocking. We can improve upon this.</p>
+    <h3>Quad-Trees:</h3>
+    <p>Quad-trees allow us to look up in order nlog(n). We create rectangles, that, if there are a certain number of elements within the rectangle, it splits into four, and keeps track of these four child elements.</p>
+    <p>Thus, when we need to lookup the elements, we can access the element's location within the canvas based on which tree element it is in. </p>
+    <p>In the following, I'm showing the division of the quad tree as more and more elements are passed into it. After 4 elements are within a rectangle, it splits, leading to smaller rectangles.</p>
+    <p>The Green rectangle is querying the quadtree to find which elements fall within it. If it finds a point, it highlights it in green</p>
+    <h4>Quad-Tree, Click to Add Points</h4>
+    <iframe src="./examples/05_agents/ex_05_11quad/index.html" width=625 height=450 scrolling="no"></iframe>
+  <h2>Further Optimizations</h2>
+  <p>Naturally there are many more optimizations to look into. The book lists the following for futher diving into</p>
+  <ul>
+    <li>Use the magnitude squared</li>
+    <li>Calculate sine and cosine lookup tables</li>
+    <li>Don't make unnecessary p5.Vector objects</li>
+  </ul>
+  <p>However, we will stop our pursuit here. If I have time. I would like to recreate the Flocking simulation with the quad-tree, however it is not included in the textbook, and I'll have to look into it further. </p>
 </html>
 
