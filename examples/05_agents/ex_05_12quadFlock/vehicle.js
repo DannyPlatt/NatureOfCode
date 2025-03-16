@@ -5,15 +5,31 @@
 class Vehicle {
   constructor(x, y, color) {
     this.position = createVector(x, y);
-    this.velocity = createVector();
+    this.velocity = createVector(random(-10, 1),random(-10, 10) );
     this.accel = createVector();
     this.mass = 1.0;
     this.radius = 8.0;
     this.maxSpeed = 200;
-    this.maxForce = 800;
+    this.maxForce = 200;
     this.timer = 0;
     this.color = color;
     this.wanderTheta = 0;
+  }
+
+  run(boids) {
+    // determin array of negihbors
+    let range = new Rectangle(this.position.x, this.position.y, rangeSize, rangeSize);
+    push();
+    noFill();
+    stroke(0, 50);
+    rectMode(CENTER);
+    rect(this.position.x, this.position.y, rangeSize, rangeSize)
+    pop();
+    let points = qtree.query(range);
+    this.flock(points);
+    this.update();
+    this.edges();
+    this.show();
   }
 
   update() {
@@ -55,6 +71,91 @@ class Vehicle {
     steer.setMag(this.maxForce);
     return steer
   }
+  flock(points) {
+    // get just the boid data from points
+    let boids = [];
+    for (let point of points) {
+      boids.push(point.data);
+
+      push();
+      stroke(0,50);
+      line(this.position.x, this.position.y, point.x, point.y );
+      pop();
+    }
+    let separation = this.separate(boids);
+    let alignment = this.align(boids);
+    let cohesion = this.cohere(boids);
+    separation.mult(3.1);
+    alignment.mult(1.0);
+    cohesion.mult(2.0);
+
+    this.applyForce(separation);
+    this.applyForce(alignment);
+    this.applyForce(cohesion);
+  }
+
+  separate(boids) {
+    let desiredSeparation = 25;
+    let steer = createVector(0,0);
+    let sum = createVector();
+    let count = 0;
+    for (let other of boids) {
+      let d = p5.Vector.dist(this.position, other.position);
+      if (this !== other && d < desiredSeparation) {
+        let diff = p5.Vector.sub(this.position, other.position);
+        diff.setMag(1 / d);
+        steer.add(diff);
+        count++;
+      }
+      loopCount++;
+    }
+    if (count > 0) {
+      steer.setMag(this.maxSpeed)
+      steer.sub(this.velocity);
+      steer.limit(this.maxForce);
+    }
+    return steer;
+  }
+  align(boids) {
+    let neighborDistance = 50;
+    let sum = createVector(0, 0);
+    let count = 0;
+    for (let other of boids) {
+      let d = p5.Vector.dist(this.position, other.position);
+      if ((this !== other) && (d < neighborDistance)) {
+        sum.add(other.position);
+        count++;
+      }
+      loopCount++;
+    }
+    if (count > 0 ){
+      sum.setMag(this.maxSpeed);
+      let steer = p5.Vector.sub(sum, this.velocity);
+      steer.limit(this.maxForce)
+      return steer;
+    } else {
+      return createVector(0,0);
+    }
+  } 
+  cohere(boids) {
+    let neighborDistance = 50;
+    let sum = createVector(0, 0);
+    let count = 0;
+    for (let other of boids) {
+      let d = p5.Vector.dist(this.position, other.position);
+      if ((this !== other) && (d < neighborDistance)) {
+        sum.add(other.position);
+        count++;
+      }
+      loopCount++;
+    }
+    if (count > 0 ){
+      sum.div(count);
+      return this.seek(sum);
+    } else {
+      return createVector(0,0);
+    }
+  } 
 
   wander() {
     let wanderR = 50;
@@ -79,7 +180,6 @@ class Vehicle {
 
     if (debug){
       this.drawWanderStuff(this.position, circlePos, target, wanderR);
-
     }
   }
 
@@ -104,7 +204,7 @@ class Vehicle {
     push();
     translate(this.position.x, this.position.y);
     rotate(angle);
-    circle(0, 0, 5);
+    circle(0, 0, this.radius);
     // beginShape();
     // vertex(this.radius *2, 0);
     // vertex(-this.radius * 2, -this.radius);
@@ -113,35 +213,21 @@ class Vehicle {
     pop();
   }
 
-  follow(flow) {
-    let desired = flow.lookup(this.position);
-    console.log(desired);
-    desired.setMag(this.maxSpeed);
-    let steer = p5.Vector.sub(desired, this.velocity);
-    steer.limit(this.maxForce);
-    this.applyForce(steer);
-  }
-
   applyForce(force) {
     this.accel.add(p5.Vector.div(force,this.mass));
   }
-  run() {
-    // Handles update(), show(), and applyForce(). This is useful for particle systems
-    this.update();
-    this.show();
-  }
   edges() {
-    if(this.position.x < -5) {
-      this.position.x = width + 5;
+    if(this.position.x < -this.radius*2) {
+      this.position.x = width + this.radius*2;
     }
-    if(this.position.x > width + 5) {
-      this.position.x = -5;
+    if(this.position.x > width + this.radius*2) {
+      this.position.x = -this.radius*2;
     }
-    if(this.position.y < -5) {
-      this.position.y = height + 5;
+    if(this.position.y < -this.radius*2) {
+      this.position.y = height + this.radius*2;
     }
-    if(this.position.y > height + 5) {
-      this.position.y = -5;
+    if(this.position.y > height + this.radius*2) {
+      this.position.y = -this.radius*2;
     }
   }
 }
@@ -172,45 +258,16 @@ class Target extends Vehicle {
   }
 }
 
-class FlowField {
+class Flock {
   constructor() {
-    this.resolution = 10;
-    this.cols = floor(width/this.resolution);
-    this.rows = floor(height/this.resolution);
-    this.field = new Array(this.cols);
-    this.zoff = 0;
-    noiseSeed(random(10000));
-    let xoff = 0;
-    for (let i = 0; i < this.cols; i++) {
-      let yoff = 0;
-      this.field[i] = new Array(this.rows);
-      for (let j = 0; j < this.rows; j++) {
-        let angle = map(noise(xoff, yoff), 0, 1, 0, TWO_PI);
-        // let angle = map(random(), 0, 1, 0, TWO_PI);
-        this.field[i][j] = p5.Vector.fromAngle(angle);
-        yoff += 0.1;
-      }
-      xoff += 0.1;
+    this.boids = [];
+  }
+  run() {
+    for (let boid of this.boids) {
+      boid.run(this.boids);
     }
   }
-  lookup(position) { // position is the location of the vehicle
-    // reutrs the unit direction vector to be used in velocity
-    let column = constrain(floor(position.x / this.resolution), 0, this.cols - 1);
-    let row = constrain(floor(position.y / this.resolution), 0, this.rows - 1);
-    return this.field[column][row].copy();
-  }
-
-  draw() {
-    for (let i = 0; i < this.cols; i++) {
-      for (let j = 0; j < this.rows; j++) {
-        push();
-        noFill()
-        translate(i * this.resolution + this.resolution/2, j * this.resolution + this.resolution/2);
-        line(0, 0, this.field[i][j].x * this.resolution, this.field[i][j].y*this.resolution);
-        circle(this.field[i][j].x, this.field[i][j].y, 2);
-        pop();
-      }
-    }
+  addBoid(boid) {
+    this.boids.push(boid);
   }
 }
-

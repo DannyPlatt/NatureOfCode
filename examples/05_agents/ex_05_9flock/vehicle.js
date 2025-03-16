@@ -5,7 +5,7 @@
 class Vehicle {
   constructor(x, y, color) {
     this.position = createVector(x, y);
-    this.velocity = createVector();
+    this.velocity = createVector(random(-10, 1),random(-10, 10) );
     this.accel = createVector();
     this.mass = 1.0;
     this.radius = 8.0;
@@ -66,9 +66,9 @@ class Vehicle {
     let separation = this.separate(boids);
     let alignment = this.align(boids);
     let cohesion = this.cohere(boids);
-    separation.mult(1.5);
+    separation.mult(3.1);
     alignment.mult(1.0);
-    cohesion.mult(1.0);
+    cohesion.mult(2.0);
 
     this.applyForce(separation);
     this.applyForce(alignment);

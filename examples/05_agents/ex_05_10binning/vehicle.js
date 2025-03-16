@@ -5,7 +5,7 @@
 class Vehicle {
   constructor(x, y, color) {
     this.position = createVector(x, y);
-    this.velocity = createVector();
+    this.velocity = createVector(random(-20, 1), random (-10,10));
     this.accel = createVector();
     this.mass = 1.0;
     this.radius = 8.0;
@@ -190,11 +190,12 @@ class Vehicle {
     push();
     translate(this.position.x, this.position.y);
     rotate(angle);
-    beginShape();
-    vertex(this.radius *2, 0);
-    vertex(-this.radius * 2, -this.radius);
-    vertex(-this.radius * 2, this.radius);
-    endShape(CLOSE);
+    circle(0, 0, 4)
+    // beginShape();
+    // vertex(this.radius *2, 0);
+    // vertex(-this.radius * 2, -this.radius);
+    // vertex(-this.radius * 2, this.radius);
+    // endShape(CLOSE);
     pop();
   }
 

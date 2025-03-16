@@ -5,14 +5,18 @@
 let isPlaying = false;
 let deltaTime = 0;
 let lastTime = 0;
-let vehicles = [];
-let vehicleCount = 200;
+let boidCount = 100;
 let timer = 0;
 let target;
 let timeSlider;
 let timeCoeff = 1;
 let flock;
 let loopCount;
+let rangeSize = 50;
+let qTreeN = 5;
+
+// create quadtree
+let boundary
 
 function setup() {
   frameRate(60);
@@ -21,8 +25,7 @@ function setup() {
   initPlayButton();
   createControls(350);
   flock = new Flock();
-  for (let i = 0; i < vehicleCount; i++) {
-    console.log("here");
+  for (let i = 0; i < boidCount; i++) {
     let boid = new Vehicle(width / 2, height / 2, [255,150,255]);
     flock.addBoid(boid);
   }
@@ -33,27 +36,37 @@ function draw() {
     return;
   }
   background(210);
-  stroke(0);
-  strokeWeight(1);
-  fill(0);
-  text ("fps: " + round(frameRate()), 10,20);
   // Handle deltaTime
   let now = millis();
   timeCoeff = timeSlider.value();
   deltaTime = (now - lastTime) / 1000 * timeCoeff;
   lastTime = now;
-  // handle vehicles
-  // for (let i = 0; i < vehicles.length; i++) {
-  //   let steer = vehicles[i].wander();
-  //   // vehicles[i].applyForce(steer)
-  //   vehicles[i].edges();
-  //   vehicles[i].update();
-  //   vehicles[i].show();
-  //   vehicles[i].timer += deltaTime;
-  // }
+  // quadtree setup
+  let boundary = new Rectangle(width/2, height/2, width, height )
+  qtree = new QuadTree(boundary, qTreeN);
+  for (let i = 0; i < boidCount; i++) {
+    let point = new Point(flock.boids[i].position.x, flock.boids[i].position.y, flock.boids[i]);
+    qtree.insert(point);
+  }
+
   loopCount = 0;
   flock.run();
-  console.log("Loop Count: ", loopCount)
+  // console.log("Loop Count: ", loopCount)
+
+  // draw quadtree
+  push();
+  qtree.show();
+  pop();
+  // draw framerate
+  push();
+  fill(255);  
+  rect(5, 0, 90, 50);
+  stroke(0);
+  strokeWeight(1);
+  fill(0);
+  text ("fps: " + round(frameRate()), 10,20);
+  text ("loops: " + loopCount, 10,35);
+  pop()
 }
 
 function createControls(ypos) {
@@ -75,17 +88,6 @@ function initPlayButton() {
   playButton.mousePressed(togglePlay);
 }
 
-function initVehicles() {
-  // Create particels at a random point around the canvas with a random starting vector
-  for (let i = 0; i < vehicleCount; i++) {
-    vehicles[i] = new Vehicle(
-      // random(width/2, width),
-      random(0, width),
-      random(0,height), 
-      [255, 0,0 ],
-    ); 
-  }
-}
 
 function togglePlay() {
   // Change the words on play button

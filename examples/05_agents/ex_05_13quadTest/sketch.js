@@ -2,11 +2,11 @@
 // Daniel Platt
 // Chapter: 
 
-let isPlaying = false;
+let isPlaying = true;
 let deltaTime = 0;
 let lastTime = 0;
 let vehicles = [];
-let vehicleCount = 800;
+let vehicleCount = 120;
 let timer = 0;
 let target;
 let timeSlider;
@@ -17,14 +17,20 @@ let gridRes = 100;
 let cols;
 let rows;
 let loopCount = 0;
+let qtree;
 
 function setup() {
-  frameRate(60);
+  frameRate(30);
   lastTime = millis()
   createCanvas(600, 350);
   initPlayButton();
-  createControls(350);
-  initGrid();
+  let boundary = new Rectangle(width/2, height/2, width/2, height/2);
+  qtree = new QuadTree(boundary, 4);
+  // for (let i = 0; i < 150; i++) {
+  //   let p = new Point(random(width), random(height));
+  //   qtree.insert(p);
+  // }
+
   flock = new Flock();
   for (let i = 0; i < vehicleCount; i++) {
     let boid = new Vehicle(width / 2, height / 2, [255,150,255]);
@@ -37,19 +43,30 @@ function draw() {
   if (!isPlaying){
     return;
   }
-  background(210);
+  background(30);
   // Handle deltaTime
   let now = millis();
-  vehicleCount = timeSlider.value();
   deltaTime = (now - lastTime) / 1000 * timeCoeff;
   lastTime = now;
-  repopGrid();
-  flock.run();
+  // repopGrid();
+  // flock.run();
   console.log("loopCount: ", loopCount);
-  stroke(0);
-  strokeWeight(1);
-  fill(0);
-  text ("fps: " + round(frameRate()), 10,20);
+  qtree.show();
+  if (mouseIsPressed) {
+    let newPoint = new Point(mouseX, mouseY);
+    qtree.insert(newPoint);
+  }
+
+  stroke (0, 255, 0);
+  rectMode(CENTER);
+  let range = new Rectangle(250, 250, 107, 75);
+  rect(range.x, range.y, range.w * 2, range.h * 2);
+  let points = qtree.query(range);
+  for (let point of points) {
+    strokeWeight(4)
+    point.show();
+  }
+  console.log(points);
 }
 
 function repopGrid() {

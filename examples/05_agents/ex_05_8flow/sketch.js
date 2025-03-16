@@ -6,7 +6,7 @@ let isPlaying = false;
 let deltaTime = 0;
 let lastTime = 0;
 let vehicles = [];
-let vehicleCount = 30;
+let vehicleCount = 1500;
 let timer = 0;
 let timeSlider;
 let timeCoeff = 1;
@@ -45,7 +45,10 @@ function draw() {
     vehicles[i].show();
     vehicles[i].timer += deltaTime;
   }
-  console.log("here");
+  stroke(0);
+  strokeWeight(1);
+  fill(0);
+  text ("fps: " + round(frameRate()), 10,20);
 }
 
 function createControls(ypos) {
