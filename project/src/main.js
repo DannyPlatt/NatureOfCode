@@ -79,7 +79,7 @@ function initState(gl, canvas, inputTriangles) {
     FPS: 30,
     score: 0,
     camera: {
-      position: vec3.fromValues(-20.0, 5.0, 0),
+      position: vec3.fromValues(-20.0, 5.0, 10),
       focalHeight: vec3.fromValues(0,0.5,0),
       at: vec3.fromValues(0.0, 0.0, 0.0),
       up: vec3.fromValues(0.0, 1.0, 0.0),
@@ -92,11 +92,6 @@ function initState(gl, canvas, inputTriangles) {
     canvas: canvas,
     selectedIndex: 0,
     hasSelected: false,
-    player: {
-      maxSpeed: 0.2,
-      rotateVel: 0.07,
-      accel: 0.02,
-    },
     light: [
       { // overhead light
         position: vec3.fromValues(0, 20, 20), // position of the light source (we can adjust however we want)

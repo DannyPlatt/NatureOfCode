@@ -160,8 +160,6 @@ class Mover {
  * returns: bool, true if collision occures
  */
 function checkCollision(objectA, objectB, offset = 1) {
-  // Check if the x and y components of the coin are colliding, previnting coin from 
-  // falling into a box
   return(
     //objectA.min.x <= objectB.max.x
     (objectA.model.position[0] - 0.5*objectA.model.scale[0])*offset <= 

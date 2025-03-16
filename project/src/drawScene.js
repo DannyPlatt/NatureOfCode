@@ -74,23 +74,8 @@ function drawScene(gl, deltaTime, state) {
       gl.uniform3fv(object.programInfo.uniformLocations.specularColor, object.material.specularColor);
       gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
       // ===============================================
-      // CHECK COLLISIONS
-      var collisionName = "0";
-      if (object.name == "cube"){ // Check for cube collisions (buildings)
-        if(checkCollision(state.objects[0], object)) {
-          var player = state.objects[0].model;
-          console.log("+++++++++COLLISION WITH CUBE DETECTED++++++++++,");
-          state.run = false; // End game
-        } // FROM physics.js
-      }
       // add gravity to all objects
       object.model.applyForce([0,-0.01,0])
-      // TODO: ensure coin is not placed inside building
-      if (object.name == "coin"){ // check for coin collisions
-        if(checkCollision(state.objects[0], object)) {
-          captureCoin(state, object);
-        }
-      }
       // Update other uniforms 
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
       gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
@@ -122,27 +107,3 @@ function calculateCentroid(vertices) {
   return center;
 
 }
-function captureCoin(state, coin) {
-  state.score++;
-  console.log("++++++++ POINT AWARDED! +++++++++++++");
-  // move coin to a random spot on the map
-  var validPosition = false;
-  const mapSize = state.objects[1].model.scale[0];
-  const coinOffSet = 0.5;
-  while (!validPosition) {
-    validPosition = true; // only loop if a collision with a building has occured
-    vec3.set(
-      coin.model.position,
-      (Math.random() * mapSize - mapSize/2) * coinOffSet,
-      5,
-      (Math.random() * mapSize - mapSize/2) * coinOffSet,
-    );
-    // check if it collides with any buildings
-    state.objects.forEach(objectB=> {
-      if (objectB.name =="cube" && checkHorizontalCollision(coin, objectB, 1.2)){
-        validPosition = false;
-      }
-    });
-  }
-}
-

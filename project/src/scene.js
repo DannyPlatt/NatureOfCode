@@ -16,12 +16,6 @@ var scene = [
     position: [0,0,0],
     scale: [40,0.01,40]
   },
-  {
-    type: coin,
-    position: [-2,4,-1],
-    scale: [.1,.8,.8]
-  },
-  // Bounding walls
   { // -X bound
     type: wall,
     position: [-20,1.5,0],
