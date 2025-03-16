@@ -20,7 +20,7 @@ function main() {
 function game() {
   // ================ SETUP CANVAS ========================
   console.log("Setting up the canvas");
-  const canvas = document.querySelector("#driveGLCanvas");
+  const canvas = document.querySelector("#projectCanvas");
   var gl = canvas.getContext("webgl2");
   if (gl === null) {
     printError('WebGL 2 not supported by your browser',
@@ -46,7 +46,7 @@ function game() {
   // This function is called when we want to render a frame to the canvas
   // TODO: setup delta time to work
   function render(now) {
-    let accelMag = 0.015;
+    let accelMag = 0.012;
     accelVec = vec3.create();
     vec3.scale(accelVec, state.objects[0].model.lookat, accelMag);
     state.objects[0].model.applyForce(accelVec);
@@ -66,19 +66,6 @@ function game() {
 
     // check keysPressed
     checkKeys(state, keysPressed);
-    // spiin coin
-    state.objects[2].model.rotation.vel[1] = 0.1;
-    // Add new obsticle every 5 seconds
-    // increase timer
-    cubeSpawnTimer += deltaTime;
-    if (cubeSpawnTimer > cubeSpawnRate){
-      cubeSpawnTimer = 0;
-      spawnCube(inputTriangles, gl, state);
-      // reset timer
-    }
-		state.objects.forEach((obj) => {
-			console.log(`Object ${obj.name} numVertices during render:`, obj.buffers?.numVertices);
-		});
 
     // Draw our scene
     drawScene(gl, deltaTime, state); // FROM drawScene.js
@@ -123,14 +110,14 @@ function initState(gl, canvas, inputTriangles) {
       accel: 0.02,
     },
     light: [
-    {
-      position: vec3.fromValues(0, 0, 0), // position of the light source (we can adjust however we want)
-      lookat: vec3.create(),
-    },
-    {
-      position: vec3.fromValues(0, 20, 20), // position of the light source (we can adjust however we want)
-      lookat: vec3.create(),
-    },
+      {
+        position: vec3.fromValues(0, 0, 0), // position of the light source (we can adjust however we want)
+        lookat: vec3.create(),
+      },
+      {
+        position: vec3.fromValues(0, 20, 20), // position of the light source (we can adjust however we want)
+        lookat: vec3.create(),
+      },
     ]
   };
 
@@ -174,79 +161,14 @@ function initState(gl, canvas, inputTriangles) {
   return state;
 }
 
-function spawnCube(inputTriangles,gl,state){
-  mapSize = state.objects[1].model.scale[0];
-  scaleLimitX = 3;
-  scaleLimitY = 2;
-  // Create new cube object
-  var run = true;
-  run = false;
-  var newCube = {
-    type: cube,
-    position: [
-      (Math.random() * mapSize - mapSize/2),
-      10,
-      (Math.random() * mapSize - mapSize/2),
-    ],
-    scale: [
-      Math.random() * scaleLimitX,
-      (Math.random() + 1) * scaleLimitY, // ensure no flat boxes
-      Math.random() * scaleLimitX
-    ],
-  }
-  // Add cube to triangles
-  inputTriangles.push(newCube.type);
-  state.objects.push(
-    {
-      name: inputTriangles.at(-1).name,
-      model: new Mover(
-        newCube.position, 
-        newCube.scale,
-      ),
-      // this will hold the shader info for each object
-      programInfo: transformShader(gl), // FROM shadersAndUniforms.js
-      buffers: undefined,
-      centroid: calculateCentroid(inputTriangles.at(-1).vertices), // FROM drawScene
-      color: new Float32Array([
-        inputTriangles.at(-1).material.diffuse[0],
-        inputTriangles.at(-1).material.diffuse[1],
-        inputTriangles.at(-1).material.diffuse[2],
-        1.0,
-      ]),
-      material: {
-        ambientColor: [0.1, 0.1, 0.1],
-        diffuseColor: cube.material.diffuse,
-        specularColor: [1.0, 1.0, 1.0],
-        shininess: 50.0,
-      },
-    }
-  );
-  // Adjust poisition until no collision with other cubes or coin;
-  var validPosition = false;
-  var mapSize = 20;
-  while(!validPosition){
-    validPosition = true;
-    // TODO: fix check. I don't think it ever returns a true collision
-    if(checkHorizontalCollision(state.objects.at(-1), state.objects[0], 1)){
-      validPosition = false;
-      state.objects.at(-1).model.position =  [
-        (Math.random() * mapSize - mapSize/2),
-        10,
-        (Math.random() * mapSize - mapSize/2),
-      ];
-    }
-  }
-  // initBuffer(gl, object, positionArray, indicesArray) 
-  initBuffers( // FROM initBuffers.js
-    gl, 
-    state.objects.at(-1), 
-    inputTriangles.at(-1).vertices.flat(),
-    inputTriangles.at(-1).triangles.flat(),
-    inputTriangles.at(-1).normals.flat()
-  );
-}
+/**
+ * Handles the game ending and creates a pause before reloading the game
+ * @param {object} state: all information regarding the game
+ * @param {time} now: current time object. a javascript thing
+ */
 function gameOver(state, now){
   // print to screen game over and score
+  // should handle delta time here somehow
   console.log("=================GAME OVER==================")
   console.log("=================Score: ",state.score, "=================")
   setTimeout(() =>{
