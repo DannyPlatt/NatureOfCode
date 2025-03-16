@@ -1,0 +1,4 @@
+ [X] Copy folder over
+ [ ] Create new git branch to work in
+ [ ] Remove all unnecessary elements.
+ [ ] Get to a point where you can draw a sphere
