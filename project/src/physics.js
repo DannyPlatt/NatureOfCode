@@ -60,7 +60,17 @@ class Mover {
     vec3.scale(this.rotation.accel, this.rotation.accel, 0);
 
   }
-  updateCamera(state){
+  /**
+   * This function will sllow the movement of the camera based on pressedKey inputs
+   */
+  updateCameraToControl(state) {
+    // setup the camera x, y, z position
+  }
+
+  /**
+   * Set the camera's location based on the player's vehicle position
+   */
+  updateCameraToPlayer(state){
     // UPDATE CAMERA ===============================
     // Set the camera x,y, position
     // camera.position = player.position - (halfway * camera.distance) only for x and y

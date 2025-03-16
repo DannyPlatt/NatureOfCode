@@ -46,7 +46,7 @@ function game() {
   // This function is called when we want to render a frame to the canvas
   // TODO: setup delta time to work
   function render(now) {
-    let accelMag = 0.012;
+    let accelMag = 0.0;
     accelVec = vec3.create();
     vec3.scale(accelVec, state.objects[0].model.lookat, accelMag);
     state.objects[0].model.applyForce(accelVec);
@@ -57,7 +57,7 @@ function game() {
         state.objects[0].model.velocity, 
         state.player.maxSpeed/vec3.len(state.objects[0].model.velocity))
     }
-    state.objects[0].model.updateCamera(state);
+    // state.objects[0].model.updateCameraToPlayer(state);
 
     // Set Timers
     now *= 0.001; // convert to seconds

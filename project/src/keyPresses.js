@@ -44,7 +44,7 @@ function checkKeys(state, keysPressed){
     vec3.add(state.camera.at, state.camera.at, [0,-cameraMovement,0]);
   }
   else if(keysPressed['e']){
-    vec3.add(state.camera.position, state.camera.position, [0,0,cameraMovement]);
+    vec3.add(state.camera.position, state.camera.position, [0,cameraMovement, 0]);
     vec3.add(state.camera.at, state.camera.at, [0,0,cameraMovement]);
   }
   else if(keysPressed['w']){
