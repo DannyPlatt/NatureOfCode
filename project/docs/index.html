@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveGL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #f39c12;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+            position: relative;
+        }
+        #overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.2);
+          color: #f39c12;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.2em;
+          z-index: 2;
+          text-align: center;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 15px;
+            border-radius: 8px;
+            color: #f39c12;
+            font-size: 1.2em;
+            z-index: 3;
+        }
+
+        #driveGLCanvas {
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #1e1e1e;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>DriveGL</h1>
+    </header>
+
+    <main>
+        <div id="overlay">
+            <p><strong>Welcome to DriveGL!</strong></p>
+            <p>Controls:</p>
+            <ul style="text-align: left;">
+                <li><strong>A:</strong> Turn Left</li>
+                <li><strong>D:</strong> Turn Right</li>
+                <li><strong>Space:</strong> Drift</li>
+            </ul>
+            <p>Your Mission:</p>
+            <p>Collect as many coins as possible</p>
+            <p>Press <strong>Space</strong> to start!</p>
+        </div>
+
+        <div id="score">Score: 0</div>
+
+        <canvas id="driveGLCanvas" width="840" height="480"></canvas>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 DriveGL. All rights reserved.</p>
+    </footer>
+
+    <!-- Include your game scripts -->
+    <script src="../lib/gl-matrix.js" type="text/javascript"></script>
+    <script src="../src/commonFunctions.js" type="text/javascript"></script>
+    <script src="../src/initBuffers.js" type="text/javascript"></script>
+    <script src="../src/shape.js" type="text/javascript"></script>
+    <script src="../src/drawScene.js" type="text/javascript"></script>
+    <script src="../src/physics.js" type="text/javascript"></script>
+    <script src="../src/arm.js" type="text/javascript"></script>
+    <script src="../src/scene.js" type="text/javascript"></script>
+    <script src="../src/keyPresses.js" type="text/javascript"></script>
+    <script src="../src/shadersAndUniforms.js" type="text/javascript"></script>
+    <script src="../src/main.js" type="text/javascript"></script>
+
+    <script>
+      // JavaScript to handle the overlay and score
+      const overlay = document.getElementById('overlay');
+      const scoreDisplay = document.getElementById('score');
+      let score = 0; // Initial score
+      let gameStarted = false;
+
+      // Update the score in the DOM
+      function updateScore(newScore) {
+      score = newScore;
+        scoreDisplay.textContent = `Score: ${score}`;
+      }
+
+      // Hide overlay and start the game when Space is pressed
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !gameStarted) {
+          overlay.style.display = 'none';
+          gameStarted = true;
+          main();
+
+          // Start game loop or other initialization logic
+          console.log('Game started!');
+        }
+      });
+
+      // Example: Simulate score update
+      setInterval(() => {
+        if (gameStarted) {
+          updateScore(state.score); // Increment score
+        }
+      }, 1000);
+    </script>
+</body>
+
+</html>
+
