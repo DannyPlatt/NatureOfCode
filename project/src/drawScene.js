@@ -66,8 +66,6 @@ function drawScene(gl, deltaTime, state) {
         // Set light uniforms
       gl.uniform3fv(object.programInfo.uniformLocations.light0Position, state.light[0].position);
       gl.uniform3fv(object.programInfo.uniformLocations.light0LookAt, state.light[0].lookat);
-      gl.uniform3fv(object.programInfo.uniformLocations.light1Position, state.light[1].position);
-      gl.uniform3fv(object.programInfo.uniformLocations.light1LookAt, state.light[1].lookat);
       gl.uniform3fv(object.programInfo.uniformLocations.viewPosition, state.camera.position);
 
       // Set material uniforms

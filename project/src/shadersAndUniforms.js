@@ -35,8 +35,6 @@ void main() {
   
   uniform vec3 uLight0Position;  // Light position
   uniform vec3 uLight0LookAt;  // Light lookat direction
-  uniform vec3 uLight1Position;  // Light position
-  uniform vec3 uLight1LookAt;  // Light lookat direction
   uniform vec3 uViewPosition;   // Camera position
   
   uniform vec3 uAmbientColor;   // Material ambient color
@@ -50,47 +48,25 @@ void main() {
       // Normalize inputs
       vec3 norm = normalize(vNormal);
       vec3 light0Dir = normalize(uLight0Position - vFragPos);
-      vec3 light1Dir = normalize(uLight1Position - vFragPos);
       vec3 viewDir = normalize(uViewPosition - vFragPos);
-      vec3 forward = normalize(uLight0LookAt);
 
-      // Compute dot product to determine if light0Dir is in the forward direction
-      float directionality = dot(forward, light0Dir);
 
       // ==== Overhead lighting ====
       // Ambient component
-      vec3 ambient = uAmbientColor * uDiffuseColor * 0.5;
+      vec3 ambient = uAmbientColor * uDiffuseColor * .99;
   
       // Diffuse component
-      float diff = max(dot(norm, light1Dir), 0.0);
-      vec3 diffuse = diff * uDiffuseColor * 0.5;
+      float diff = max(dot(norm, light0Dir), 0.0);
+      vec3 diffuse = diff * uDiffuseColor * 0.7;
   
       // Specular component
-      vec3 reflectDir = reflect(-light1Dir, norm);
+      vec3 reflectDir = reflect(-light0Dir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
-      vec3 specular = spec * uSpecularColor * 0.5;
+      vec3 specular = spec * uSpecularColor * 0.2;
 
-      float cutoff = cos(radians(135.0)); // 45-degree cone
-      if (directionality >= cutoff) {
-          vec3 result = (ambient + diffuse + specular);
-          fragColor = vec4(result, 1.0); // Set alpha to 1.0
-          return;
-      }
-
-      // Ambient component
-      vec3 ambient0 = uAmbientColor * uDiffuseColor;
   
-      // Diffuse component
-      float diff0 = max(dot(norm, light0Dir), 0.0);
-      vec3 diffuse0 = diff0 * uDiffuseColor * 0.5;
-  
-      // Specular component
-      vec3 reflectDir0 = reflect(-light0Dir, norm);
-      float spec0 = pow(max(dot(viewDir, reflectDir0), 0.0), uShininess);
-      vec3 specular0 = spec0 * uSpecularColor;
-  
-      vec3 result0 = ambient0+ambient + diffuse0+diffuse + specular0+specular;
-      fragColor = vec4(result0, 1.0); // Set alpha to 1.0
+      vec3 result = ambient + diffuse + specular;
+      fragColor = vec4(result, 1.0); // Set alpha to 1.0
   }
   `;
 
@@ -118,8 +94,6 @@ void main() {
        // Lighting properties
        light0Position: gl.getUniformLocation(shaderProgram, 'uLight0Position'),
        light0LookAt: gl.getUniformLocation(shaderProgram, 'uLight0LookAt'),
-       light1Position: gl.getUniformLocation(shaderProgram, 'uLight1Position'),
-       light1LookAt: gl.getUniformLocation(shaderProgram, 'uLight1LookAt'),
        viewPosition: gl.getUniformLocation(shaderProgram, 'uViewPosition'),
      },
    };

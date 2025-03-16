@@ -46,18 +46,6 @@ function game() {
   // This function is called when we want to render a frame to the canvas
   // TODO: setup delta time to work
   function render(now) {
-    let accelMag = 0.0;
-    accelVec = vec3.create();
-    vec3.scale(accelVec, state.objects[0].model.lookat, accelMag);
-    state.objects[0].model.applyForce(accelVec);
-    // limit the max speed
-    if(vec3.len(state.objects[0].model.velocity) > state.player.maxSpeed){
-      vec3.scale(
-        state.objects[0].model.velocity, 
-        state.objects[0].model.velocity, 
-        state.player.maxSpeed/vec3.len(state.objects[0].model.velocity))
-    }
-    // state.objects[0].model.updateCameraToPlayer(state);
 
     // Set Timers
     now *= 0.001; // convert to seconds
@@ -91,7 +79,7 @@ function initState(gl, canvas, inputTriangles) {
     FPS: 30,
     score: 0,
     camera: {
-      position: vec3.fromValues(0.0, 0.0, 0),
+      position: vec3.fromValues(-20.0, 5.0, 0),
       focalHeight: vec3.fromValues(0,0.5,0),
       at: vec3.fromValues(0.0, 0.0, 0.0),
       up: vec3.fromValues(0.0, 1.0, 0.0),
@@ -110,11 +98,7 @@ function initState(gl, canvas, inputTriangles) {
       accel: 0.02,
     },
     light: [
-      {
-        position: vec3.fromValues(0, 0, 0), // position of the light source (we can adjust however we want)
-        lookat: vec3.create(),
-      },
-      {
+      { // overhead light
         position: vec3.fromValues(0, 20, 20), // position of the light source (we can adjust however we want)
         lookat: vec3.create(),
       },
