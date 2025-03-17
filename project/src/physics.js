@@ -6,7 +6,6 @@ class Mover {
     this.velocity = vec3.fromValues(0,0,0);
     this.acceleration = vec3.fromValues(0,0,0);
     this.mass = 1; // arbirary mass value
-    this.volume = 1;
     this.amortization =  0.9;
     this.rotation = {
       accel: vec3.create(),
@@ -22,23 +21,6 @@ class Mover {
     vec3.add(this.acceleration, this.acceleration, tempForce);
   }
 
-  applyRotationalForce(force, distance) {
-    // force is in vec3 format
-    // distance from the center of mass for [x,y,z] vec 3 format
-    var tempForce = vec3.create();
-    vec3.scale(tempForce, tempForce, (1/this.mass));// wrong but fine
-    // rotation about the x axis, use the y and z component of the force
-    tempForce[0] = 6*distance[0]*(this.mass*this.volume**2) * (force[1] + force[2]); 
-    // rotation about the y axis, use the x and z component of the force
-    tempForce[1] = 6*distance[1]*(this.mass*this.volume**2) * (force[0] + force[2]); 
-    // rotation about the z axis, use the x and y component of the force
-    tempForce[1] = 6*distance[1]*(this.mass*this.volume**2) * (force[0] + force[1]); 
-
-    var yAxis = vec3.fromValues(0,1,0);
-    var zAxis = vec3.fromValues(0,0,1);
-    vec3.add(this.rotation.accel, this.rotation.accel, tempForce);
-  }
-
   update(state) {
     // this.checkBounds();
     // position
@@ -48,13 +30,6 @@ class Mover {
     vec3.scale(scaledVel, this.velocity, state.dt);
     vec3.add(this.position, this.position, scaledVel);
     vec3.scale(this.acceleration, this.acceleration, 0);
-
-    // rotation
-    vec3.scale(this.rotation.accel, this.rotation.accel, state.dt);
-    vec3.add(this.rotation.vel, this.rotation.vel, this.rotation.accel);
-    mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[0], [1,0,0]); //x
-    mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[1], [0,1,0]); //y
-    mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[2], [0,0,1]); //z
 
     // amortization
     vec3.scale(this.rotation.vel, this.rotation.vel, this.amortization);

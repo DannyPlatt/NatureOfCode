@@ -83,7 +83,7 @@ function initState(gl, canvas) {
     dt: 0,
     // ==== SETUP CAMERA =========
     camera: {
-      position: vec3.fromValues(20.0, 20.0, -20),
+      position: vec3.fromValues(100.0, 20.0, -10),
       at: vec3.fromValues(0.0, 0.0, 0.0),
       up: vec3.fromValues(0.0, 0.0, -1.0),
       view: 1,
@@ -95,6 +95,7 @@ function initState(gl, canvas) {
     canvas: canvas,
     canvasWidth: 40,
     canvasHeight: 40,
+    canvasDepth: 40,
     selectedIndex: 0,
     hasSelected: false,
     light: [

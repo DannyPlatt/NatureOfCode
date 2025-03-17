@@ -27,7 +27,7 @@ function drawScene(state, gl) {
       var fovy = 75.0 * Math.PI / 180.0; // Vertical field of view in radians
       var aspect = state.canvas.clientWidth / state.canvas.clientHeight; // Aspect ratio of the canvas
       var near = 0.1; // Near clipping plane
-      var far = 100.0; // Far clipping plane
+      var far = 500.0; // Far clipping plane
       // Generate the projection matrix using perspective
       mat4.perspective(projectionMatrix, fovy, aspect, near, far);
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
