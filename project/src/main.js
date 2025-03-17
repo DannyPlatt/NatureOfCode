@@ -45,9 +45,9 @@ function game() {
   // ================ GAME LOOP ====================
   console.log("Starting rendering loop");
   // A variable for keeping track of time between frames
+  const fpsElem = document.querySelector('#fps');
+  let fpsUpdate = 0
   var then = 0.0;
-  var cubeSpawnTimer = 0;
-  var cubeSpawnRate = 5; // Every 5 seconds spawn new cube
   // This function is called when we want to render a frame to the canvas
   // TODO: setup delta time to work
   function render(now) {
@@ -56,6 +56,13 @@ function game() {
     now *= 0.001; // convert to seconds
     const deltaTime = now - then;
     then = now;
+    const fps = 1/deltaTime;
+    fpsUpdate += deltaTime;
+    if (fpsUpdate > 1) {
+      fpsElem.textContent = fps.toFixed(1);
+      fpsUpdate = 0;
+    }
+
 
     // check keysPressed
     checkKeys(state, keysPressed);
@@ -81,7 +88,6 @@ function initState(gl, canvas) {
     run: true,
     debug: false,
     FPS: 30,
-    score: 0,
     // ==== SETUP CAMERA =========
     camera: {
       position: vec3.fromValues(20.0, 20.0, -20),
@@ -114,10 +120,8 @@ function initState(gl, canvas) {
  * @param {time} now: current time object. a javascript thing
  */
 function gameOver(state, now){
-  // print to screen game over and score
   // should handle delta time here somehow
   console.log("=================GAME OVER==================")
-  console.log("=================Score: ",state.score, "=================")
   setTimeout(() =>{
     game();
   }, 5000);
