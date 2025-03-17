@@ -32,13 +32,11 @@ function game() {
   state = initState(gl, canvas);
   var inputTriangles = []
   scene.forEach(obj => { // FROM scene.js
-    spawnNewObject(
-      inputTriangles, gl,state, obj.type, obj.position, obj.scale
-    );
+    console.log(obj.color);
+    spawnNewObject( inputTriangles, gl,state, obj.type, obj.position, obj.scale, obj.color);
   });
-  let ballCount = 500;
+  let ballCount = 10;
   initBalls(inputTriangles,gl,state, ballCount);
-  console.log("ballCount:", ballCount);
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
 
@@ -51,24 +49,23 @@ function game() {
   // This function is called when we want to render a frame to the canvas
   // TODO: setup delta time to work
   function render(now) {
-
-    // Set Timers
     now *= 0.001; // convert to seconds
-    const deltaTime = now - then;
+    if (then === 0) {
+      then = now;
+    }
+    state.dt = now - then;
     then = now;
-    const fps = 1/deltaTime;
-    fpsUpdate += deltaTime;
+    const fps = 1/state.dt;
+    fpsUpdate += state.dt;
     if (fpsUpdate > 1) {
       fpsElem.textContent = fps.toFixed(1);
       fpsUpdate = 0;
     }
-
-
     // check keysPressed
     checkKeys(state, keysPressed);
 
     // Draw our scene
-    drawScene(gl, deltaTime, state); // FROM drawScene.js
+    drawScene(gl,state); // FROM drawScene.js
 
     // Request another frame when this one is done
     if(state.run) {
@@ -87,7 +84,7 @@ function initState(gl, canvas) {
   var state = {
     run: true,
     debug: false,
-    FPS: 30,
+    dt: 0,
     // ==== SETUP CAMERA =========
     camera: {
       position: vec3.fromValues(20.0, 20.0, -20),

@@ -1,10 +1,10 @@
 /**
  * Draws the scene. Should be called every frame
  * 
- * @param  {} gl WebGL2 context
- * @param {number} deltaTime Time between each rendering call
+ * @param  {webGL2 object} gl: WebGL2 context
+ * @param {object} state: information about scene
  */
-function drawScene(gl, deltaTime, state) {
+function drawScene(gl, state) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set background
   // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -78,7 +78,7 @@ function drawScene(gl, deltaTime, state) {
         var vecDirection = vec3.create()
         vec3.sub(vecDirection, vecOrigin, object.model.position);
         vec3.normalize(vecDirection, vecDirection);
-        vec3.scale(vecDirection, vecDirection, 0.01);
+        vec3.scale(vecDirection, vecDirection, 100);
         object.model.applyForce(vecDirection)
       }
       // Update other uniforms 
@@ -93,8 +93,8 @@ function drawScene(gl, deltaTime, state) {
       gl.bindVertexArray(object.buffers.vao);
       // Draw the object
       const offset = 0; // Number of elements to skip before starting
-      //gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
-      gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      // gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
     }
   });
 }

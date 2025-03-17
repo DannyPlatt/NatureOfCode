@@ -16,9 +16,9 @@ function initBalls(inputTriangles,gl,state, count) {
   for (let i = 0; i < ballCount; i++) {
     let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
     let scale = [scaleSize, scaleSize, scaleSize];
-    let ball = spawnNewObject(inputTriangles, gl, state, type, position, scale)
-    ball.model.velocity = vec3.fromValues(randomFl(-0.2, 0.2), randomFl(-0.2, 0.2), randomFl(-0.5, 0.5))
-    ball.material.diffuseColor = [Math.random(),Math.random(),Math.random()];
+    let color = [Math.random(),Math.random(),Math.random()]
+    let ball = spawnNewObject(inputTriangles, gl, state, type, position, scale, color)
+    ball.model.velocity = vec3.fromValues(randomFl(-20, 20), randomFl(-20, 20), randomFl(-50, 50))
   }
 
 }
@@ -29,8 +29,9 @@ function initBalls(inputTriangles,gl,state, count) {
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(inputTriangles,gl,state, type, position, scale){
+function spawnNewObject(inputTriangles,gl,state, type, position, scale, color){
   // create new object
+  type.material.diffuse = [color[0],color[1], color[2]];
   var newShape = {
     name: type.name,
     model: new Mover(
@@ -45,7 +46,7 @@ function spawnNewObject(inputTriangles,gl,state, type, position, scale){
       type.material.diffuse[0],
       type.material.diffuse[1],
       type.material.diffuse[2],
-      1.0,
+      color[3],
     ]),
     material: {
       ambientColor: [0.6, 0.6, 0.6],

@@ -42,11 +42,15 @@ class Mover {
   update(state) {
     // this.checkBounds();
     // position
+    vec3.scale(this.acceleration, this.acceleration, state.dt);
     vec3.add(this.velocity, this.velocity, this.acceleration);
-    vec3.add(this.position, this.position, this.velocity);
+    let scaledVel = vec3.create();
+    vec3.scale(scaledVel, this.velocity, state.dt);
+    vec3.add(this.position, this.position, scaledVel);
     vec3.scale(this.acceleration, this.acceleration, 0);
 
     // rotation
+    vec3.scale(this.rotation.accel, this.rotation.accel, state.dt);
     vec3.add(this.rotation.vel, this.rotation.vel, this.rotation.accel);
     mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[0], [1,0,0]); //x
     mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[1], [0,1,0]); //y
