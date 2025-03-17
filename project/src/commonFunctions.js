@@ -1,9 +1,6 @@
-/**
- * Used to add new objects to the scene
- * @param  {object} inputTriangles: list containing all object information
- * @param  {object} gl: the global web gl object
- * @param  {state} state: All information about the game 
- */
+function randomFl(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
 function randomInt(min, max) {
   const minCeiled = Math.ceil(min);
@@ -14,21 +11,26 @@ function randomInt(min, max) {
 function initBalls(inputTriangles,gl,state, count) {
   let ballCount = count;
   let type = sphere;
-  let w = state.canvasWidth/2;
-  let s = 5;
+  let w = state.canvasWidth/4;
+  let scaleSize = 1
   for (let i = 0; i < ballCount; i++) {
     let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
-    let scaleSize = Math.random();
     let scale = [scaleSize, scaleSize, scaleSize];
-    spawnNewObject(inputTriangles, gl, state, type, position, scale)
+    let ball = spawnNewObject(inputTriangles, gl, state, type, position, scale)
+    ball.model.velocity = vec3.fromValues(randomFl(-0.2, 0.2), randomFl(-0.2, 0.2), randomFl(-0.5, 0.5))
+    ball.material.diffuseColor = [Math.random(),Math.random(),Math.random()];
   }
 
 }
+
+/**
+ * Used to add new objects to the scene
+ * @param  {object} inputTriangles: list containing all object information
+ * @param  {object} gl: the global web gl object
+ * @param  {state} state: All information about the game 
+ */
 function spawnNewObject(inputTriangles,gl,state, type, position, scale){
   // create new object
-  var run = true;
-  run = false;
-  
   var newShape = {
     name: type.name,
     model: new Mover(
@@ -46,14 +48,14 @@ function spawnNewObject(inputTriangles,gl,state, type, position, scale){
       1.0,
     ]),
     material: {
-      ambientColor: [0.5, 0.5, 0.5],
+      ambientColor: [0.6, 0.6, 0.6],
       diffuseColor: type.material.diffuse,
       specularColor: [1.0, 1.0, 1.0],
       shininess: 32.0,
     },
   }
 
-  // Add cube to triangles
+  // Add newShape to triangles
   inputTriangles.push(type);
   state.objects.push(newShape);
 
@@ -65,6 +67,7 @@ function spawnNewObject(inputTriangles,gl,state, type, position, scale){
     type.triangles.flat(),
     type.normals.flat()
   );
+  return newShape;
 }
 /**
  * A custom error function. The tag with id `webglError` must be present

@@ -7,7 +7,7 @@ class Mover {
     this.acceleration = vec3.fromValues(0,0,0);
     this.mass = 1; // arbirary mass value
     this.volume = 1;
-    this.amortization =  0.99;
+    this.amortization =  0.9;
     this.rotation = {
       accel: vec3.create(),
       vel: vec3.create(),
@@ -40,7 +40,7 @@ class Mover {
   }
 
   update(state) {
-    this.checkBounds();
+    // this.checkBounds();
     // position
     vec3.add(this.velocity, this.velocity, this.acceleration);
     vec3.add(this.position, this.position, this.velocity);

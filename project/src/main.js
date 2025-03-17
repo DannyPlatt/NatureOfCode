@@ -29,12 +29,16 @@ function game() {
   }
 
   // ================ LOAD SHAPE FILES ====================
+  state = initState(gl, canvas);
   var inputTriangles = []
-  scene.forEach(object => { // FROM scene.js
-    inputTriangles.push(object.type);
+  scene.forEach(obj => { // FROM scene.js
+    spawnNewObject(
+      inputTriangles, gl,state, obj.type, obj.position, obj.scale
+    );
   });
-  state = initState(gl, canvas, inputTriangles);
-  initBalls(inputTriangles,gl,state, 5000);
+  let ballCount = 500;
+  initBalls(inputTriangles,gl,state, ballCount);
+  console.log("ballCount:", ballCount);
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
 
@@ -71,17 +75,16 @@ function game() {
   requestAnimationFrame(render);
 }
 
-function initState(gl, canvas, inputTriangles) {
-  // Create a state for our scene
+function initState(gl, canvas) {
   // ================ SETUP STATE ========================
   var state = {
-    // ==== SETUP CAMERA =========
     run: true,
     debug: false,
     FPS: 30,
     score: 0,
+    // ==== SETUP CAMERA =========
     camera: {
-      position: vec3.fromValues(0.0, 40.0, 0),
+      position: vec3.fromValues(20.0, 20.0, -20),
       at: vec3.fromValues(0.0, 0.0, 0.0),
       up: vec3.fromValues(0.0, 0.0, -1.0),
       view: 1,
@@ -102,45 +105,6 @@ function initState(gl, canvas, inputTriangles) {
       },
     ]
   };
-
-  // ================ ADD MODELS ========================
-  // Create an object for every model we want in the scene
-  for (var i = 0; i < inputTriangles.length; i++) {
-    state.objects.push(
-      {
-        name: inputTriangles[i].name,
-        model: new Mover(
-          scene[i].position, 
-          scene[i].scale,
-        ),
-        // this will hold the shader info for each object
-        programInfo: transformShader(gl), // FROM shadersAndUniforms.js
-        buffers: undefined,
-        centroid: calculateCentroid(inputTriangles[i].vertices), // FROM drawScene
-        color: new Float32Array([
-          inputTriangles[i].material.diffuse[0],
-          inputTriangles[i].material.diffuse[1],
-          inputTriangles[i].material.diffuse[2],
-          1.0,
-        ]),
-        material: {
-          ambientColor: [0.2, 0.2, 0.2], // random values for now
-          diffuseColor: inputTriangles[i].material.diffuse,
-          specularColor: [1.0, 1.0, 1.0], 
-          shininess: 32.0, // Example value
-        },
-      }
-    );
-    // initBuffers(gl, object, positionArray, indicesArray) 
-    initBuffers( // FROM initBuffers.js
-      gl, 
-      state.objects[i], 
-      inputTriangles[i].vertices.flat(),
-      inputTriangles[i].triangles.flat(),
-      inputTriangles[i].normals.flat()
-    );
-  }
-
   return state;
 }
 

@@ -73,7 +73,14 @@ function drawScene(gl, deltaTime, state) {
       gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
       // ===============================================
       // add gravity to all objects
-      object.model.applyForce([0,-0.01,0])
+      if(object.name != 'origin'){
+        var vecOrigin = vec3.fromValues(0,0,0);
+        var vecDirection = vec3.create()
+        vec3.sub(vecDirection, vecOrigin, object.model.position);
+        vec3.normalize(vecDirection, vecDirection);
+        vec3.scale(vecDirection, vecDirection, 0.01);
+        object.model.applyForce(vecDirection)
+      }
       // Update other uniforms 
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
       gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
