@@ -79,10 +79,9 @@ function initState(gl, canvas, inputTriangles) {
     FPS: 30,
     score: 0,
     camera: {
-      position: vec3.fromValues(-20.0, 5.0, 10),
-      focalHeight: vec3.fromValues(0,0.5,0),
+      position: vec3.fromValues(0.0, 40.0, 0),
       at: vec3.fromValues(0.0, 0.0, 0.0),
-      up: vec3.fromValues(0.0, 1.0, 0.0),
+      up: vec3.fromValues(0.0, 0.0, -1.0),
       view: 1,
       distance: 3, // following distance for first person camera
       height: 2,
@@ -90,11 +89,13 @@ function initState(gl, canvas, inputTriangles) {
     },
     objects: [],
     canvas: canvas,
+    canvasWidth: 100,
+    canvasHeight: 100,
     selectedIndex: 0,
     hasSelected: false,
     light: [
       { // overhead light
-        position: vec3.fromValues(0, 20, 20), // position of the light source (we can adjust however we want)
+        position: vec3.fromValues(0, 20, -20), // position of the light source (we can adjust however we want)
         lookat: vec3.create(),
       },
     ]

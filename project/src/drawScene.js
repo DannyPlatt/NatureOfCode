@@ -33,9 +33,7 @@ function drawScene(gl, deltaTime, state) {
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
 
       // create focus point using car position + velocity to create a dynameic camera movement
-      var focalPoint = vec3.create();
-      vec3.subtract(focalPoint,state.objects[0].model.position, vec3.normalize(vec3.create(), state.objects[0].model.velocity));
-        vec3.add(focalPoint, focalPoint, state.camera.focalHeight);
+      var focalPoint = vec3.fromValues(0, 0, 0);
       // update view matrix with state.camera
       // link to corresponding uniform object.programInfo.uniformLocations.[...]
       // Use lookat to create viewMatrix
@@ -43,7 +41,7 @@ function drawScene(gl, deltaTime, state) {
       mat4.lookAt(
         viewMatrix,
         state.camera.position,
-        focalPoint,
+        state.camera.at,
         state.camera.up,
       );
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);

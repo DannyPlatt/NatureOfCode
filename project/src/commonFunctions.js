@@ -5,7 +5,7 @@
  * @param  {state} state: All information about the game 
  */
 function spawnNewObject(inputTriangles,gl,state){
-  mapSize = state.objects[1].model.scale[0];
+  mapSize = state.canvasWidth;
   scaleLimitX = 3;
   scaleLimitY = 2;
   // Create new cube object

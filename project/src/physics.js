@@ -98,20 +98,14 @@ class Mover {
 
   checkBounds(){
     // Get the distance from the origin to the outer bound of the scene
-    var sceneSize = state.objects[1].model.scale[0]/2;
-    // const lowerXBound = -10;
-    // const upperXBound = 10;
-    // const lowerYBound =-10;
-    // const upperYBound = 10;
-    // const lowerZBound = -10;
-    // const upperZBound = 10;
+    var sceneSize = state.canvasWidth/2;
     if(this.position[0] < -sceneSize ||
       this.position[0] > sceneSize ||
       this.position[1] < -sceneSize||
       this.position[1] > sceneSize ||
       this.position[2] < -sceneSize ||
       this.position[2] > sceneSize) {
-      state.run = false;
+      // state.run = false;
     }
 
     // add bounce off bottom
