@@ -57,7 +57,7 @@ void main() {
   
       // Diffuse component
       float diff = max(dot(norm, light0Dir), 0.0);
-      vec3 diffuse = diff * uDiffuseColor * 0.7;
+      vec3 diffuse = diff * uDiffuseColor * 0.99;
   
       // Specular component
       vec3 reflectDir = reflect(-light0Dir, norm);

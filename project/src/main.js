@@ -30,15 +30,11 @@ function game() {
 
   // ================ LOAD SHAPE FILES ====================
   state = initState(gl, canvas);
-  var inputTriangles = []
   scene.forEach(obj => { // FROM scene.js
     console.log(obj.color);
-    spawnNewObject( inputTriangles, gl,state, obj.type, obj.position, obj.scale, obj.color);
+    spawnNewObject(gl,state, obj.type, obj.position, obj.scale, obj.color);
   });
-  let ballCount = 10;
-  initBalls(inputTriangles,gl,state, ballCount);
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
-
 
   // ================ GAME LOOP ====================
   console.log("Starting rendering loop");
@@ -46,8 +42,8 @@ function game() {
   const fpsElem = document.querySelector('#fps');
   let fpsUpdate = 0
   var then = 0.0;
-  // This function is called when we want to render a frame to the canvas
-  // TODO: setup delta time to work
+  
+  setup(state, gl); // Add before loop items
   function render(now) {
     now *= 0.001; // convert to seconds
     if (then === 0) {
@@ -65,7 +61,7 @@ function game() {
     checkKeys(state, keysPressed);
 
     // Draw our scene
-    drawScene(gl,state); // FROM drawScene.js
+    draw(state, gl);  // add in loop items
 
     // Request another frame when this one is done
     if(state.run) {

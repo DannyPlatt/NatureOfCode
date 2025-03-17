@@ -8,28 +8,12 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 
-function initBalls(inputTriangles,gl,state, count) {
-  let ballCount = count;
-  let type = sphere;
-  let w = state.canvasWidth/4;
-  let scaleSize = 1
-  for (let i = 0; i < ballCount; i++) {
-    let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
-    let scale = [scaleSize, scaleSize, scaleSize];
-    let color = [Math.random(),Math.random(),Math.random()]
-    let ball = spawnNewObject(inputTriangles, gl, state, type, position, scale, color)
-    ball.model.velocity = vec3.fromValues(randomFl(-20, 20), randomFl(-20, 20), randomFl(-50, 50))
-  }
-
-}
-
 /**
  * Used to add new objects to the scene
- * @param  {object} inputTriangles: list containing all object information
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(inputTriangles,gl,state, type, position, scale, color){
+function spawnNewObject(gl,state, type, position, scale = [1,1,1], color = [1,1,1,1]){
   // create new object
   type.material.diffuse = [color[0],color[1], color[2]];
   var newShape = {
@@ -57,7 +41,6 @@ function spawnNewObject(inputTriangles,gl,state, type, position, scale, color){
   }
 
   // Add newShape to triangles
-  inputTriangles.push(type);
   state.objects.push(newShape);
 
   // initBuffer(gl, object, positionArray, indicesArray) 

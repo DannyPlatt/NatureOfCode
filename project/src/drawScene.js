@@ -4,7 +4,7 @@
  * @param  {webGL2 object} gl: WebGL2 context
  * @param {object} state: information about scene
  */
-function drawScene(gl, state) {
+function drawScene(state, gl) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set background
   // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -72,15 +72,15 @@ function drawScene(gl, state) {
       gl.uniform3fv(object.programInfo.uniformLocations.specularColor, object.material.specularColor);
       gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
       // ===============================================
-      // add gravity to all objects
-      if(object.name != 'origin'){
-        var vecOrigin = vec3.fromValues(0,0,0);
-        var vecDirection = vec3.create()
-        vec3.sub(vecDirection, vecOrigin, object.model.position);
-        vec3.normalize(vecDirection, vecDirection);
-        vec3.scale(vecDirection, vecDirection, 100);
-        object.model.applyForce(vecDirection)
-      }
+      // // add gravity to all objects
+      // if(object.name != 'origin'){
+      //   var vecOrigin = vec3.fromValues(0,0,0);
+      //   var vecDirection = vec3.create()
+      //   vec3.sub(vecDirection, vecOrigin, object.model.position);
+      //   vec3.normalize(vecDirection, vecDirection);
+      //   vec3.scale(vecDirection, vecDirection, 100);
+      //   object.model.applyForce(vecDirection)
+      // }
       // Update other uniforms 
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
       gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
