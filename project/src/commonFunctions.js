@@ -4,62 +4,66 @@
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(inputTriangles,gl,state){
-  mapSize = state.canvasWidth;
-  scaleLimitX = 3;
-  scaleLimitY = 2;
-  // Create new cube object
+
+function randomInt(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+}
+
+function initBalls(inputTriangles,gl,state, count) {
+  let ballCount = count;
+  let type = sphere;
+  let w = state.canvasWidth/2;
+  let s = 5;
+  for (let i = 0; i < ballCount; i++) {
+    let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
+    let scaleSize = Math.random();
+    let scale = [scaleSize, scaleSize, scaleSize];
+    spawnNewObject(inputTriangles, gl, state, type, position, scale)
+  }
+
+}
+function spawnNewObject(inputTriangles,gl,state, type, position, scale){
+  // create new object
   var run = true;
   run = false;
-  var newCube = {
-    type: cube,
-    position: [
-      (Math.random() * mapSize - mapSize/2),
-      10,
-      (Math.random() * mapSize - mapSize/2),
-    ],
-    scale: [
-      Math.random() * scaleLimitX,
-      (Math.random() + 1) * scaleLimitY, // ensure no flat boxes
-      Math.random() * scaleLimitX
-    ],
+  
+  var newShape = {
+    name: type.name,
+    model: new Mover(
+      position, 
+      scale,
+    ),
+    // this will hold the shader info for each object
+    programInfo: transformShader(gl), // FROM shadersAndUniforms.js
+    buffers: undefined,
+    centroid: calculateCentroid(type.vertices), // FROM drawScene
+    color: new Float32Array([
+      type.material.diffuse[0],
+      type.material.diffuse[1],
+      type.material.diffuse[2],
+      1.0,
+    ]),
+    material: {
+      ambientColor: [0.5, 0.5, 0.5],
+      diffuseColor: type.material.diffuse,
+      specularColor: [1.0, 1.0, 1.0],
+      shininess: 32.0,
+    },
   }
 
   // Add cube to triangles
-  inputTriangles.push(newCube.type);
-  state.objects.push(
-    {
-      name: inputTriangles.at(-1).name,
-      model: new Mover(
-        newCube.position, 
-        newCube.scale,
-      ),
-      // this will hold the shader info for each object
-      programInfo: transformShader(gl), // FROM shadersAndUniforms.js
-      buffers: undefined,
-      centroid: calculateCentroid(inputTriangles.at(-1).vertices), // FROM drawScene
-      color: new Float32Array([
-        inputTriangles.at(-1).material.diffuse[0],
-        inputTriangles.at(-1).material.diffuse[1],
-        inputTriangles.at(-1).material.diffuse[2],
-        1.0,
-      ]),
-      material: {
-        ambientColor: [0.1, 0.1, 0.1],
-        diffuseColor: cube.material.diffuse,
-        specularColor: [1.0, 1.0, 1.0],
-        shininess: 50.0,
-      },
-    }
-  );
+  inputTriangles.push(type);
+  state.objects.push(newShape);
 
   // initBuffer(gl, object, positionArray, indicesArray) 
   initBuffers( // FROM initBuffers.js
     gl, 
     state.objects.at(-1), 
-    inputTriangles.at(-1).vertices.flat(),
-    inputTriangles.at(-1).triangles.flat(),
-    inputTriangles.at(-1).normals.flat()
+    type.vertices.flat(),
+    type.triangles.flat(),
+    type.normals.flat()
   );
 }
 /**

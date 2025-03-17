@@ -1,6 +1,6 @@
 var scene = [
   {
-    type: coin,
+    type: sphere,
     position: [0,50,0],
     scale:[1,1,1]
   },

@@ -7,8 +7,8 @@ class Mover {
     this.acceleration = vec3.fromValues(0,0,0);
     this.mass = 1; // arbirary mass value
     this.volume = 1;
+    this.amortization =  0.99;
     this.rotation = {
-      amortization: 0.99,
       accel: vec3.create(),
       vel: vec3.create(),
       mat: mat4.create(),
@@ -53,7 +53,7 @@ class Mover {
     mat4.rotate(this.rotation.mat, this.rotation.mat, this.rotation.vel[2], [0,0,1]); //z
 
     // amortization
-    vec3.scale(this.rotation.vel, this.rotation.vel, this.rotation.amortization);
+    vec3.scale(this.rotation.vel, this.rotation.vel, this.amortization);
 
 
     // reset acceleration
@@ -115,7 +115,7 @@ class Mover {
         this.velocity[1] = 0.0;
       }
       else{
-        this.velocity[1] *= -0.7;
+        this.velocity[1] *= -this.amortization;
       }
     }
     /*

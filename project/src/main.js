@@ -34,6 +34,7 @@ function game() {
     inputTriangles.push(object.type);
   });
   state = initState(gl, canvas, inputTriangles);
+  initBalls(inputTriangles,gl,state, 5000);
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
 
@@ -76,6 +77,7 @@ function initState(gl, canvas, inputTriangles) {
   var state = {
     // ==== SETUP CAMERA =========
     run: true,
+    debug: false,
     FPS: 30,
     score: 0,
     camera: {
@@ -89,8 +91,8 @@ function initState(gl, canvas, inputTriangles) {
     },
     objects: [],
     canvas: canvas,
-    canvasWidth: 100,
-    canvasHeight: 100,
+    canvasWidth: 40,
+    canvasHeight: 40,
     selectedIndex: 0,
     hasSelected: false,
     light: [
@@ -138,6 +140,7 @@ function initState(gl, canvas, inputTriangles) {
       inputTriangles[i].normals.flat()
     );
   }
+
   return state;
 }
 

@@ -30,7 +30,6 @@ function initBuffers(gl, object, positionArray, indicesArray, normalArray) {
     indices: indexBuffer,
     numVertices: indices.length,
   };
-	console.log(object.buffers.numVertices);
 }
 
 function initPositionAttribute(gl, programInfo, positionArray) {
