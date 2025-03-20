@@ -81,6 +81,18 @@
             color: #a0a0a0;
             font-size: 0.9em;
         }
+        /* The slider itself */
+        .slider {
+          -webkit-appearance: none;  /* Override default CSS styles */
+          appearance: none;
+          width: 100%; /* Full-width */
+          height: 25px; /* Specified height */
+          background: #d3d3d3; /* Grey background */
+          outline: none; /* Remove outline */
+          opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+          -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+          transition: opacity .2s;
+        } 
     </style>
 </head>
 
@@ -104,6 +116,11 @@
         </div>
 
         <div id="fps">fps: 0</div>
+        <div class="slideContainer">
+          <input type="range" min="0" max="2" step="0.01" value="1.0" class="slider" id="slider0">
+          <input type="range" min="0" max="2" step="0.01" value="1.0" class="slider" id="slider1">
+          <input type="range" min="0" max="2" step="0.01" value="1.0" class="slider" id="slider2">
+        </div>
 
         <canvas id="projectCanvas" width="840" height="480"></canvas>
     </main>

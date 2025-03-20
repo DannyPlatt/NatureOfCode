@@ -104,7 +104,7 @@ class Vehicle {
     for (let other of boids) {
       let d = p5.Vector.dist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
-        sum.add(other.position);
+        sum.add(other.velocity);
         count++;
       }
       loopCount++;

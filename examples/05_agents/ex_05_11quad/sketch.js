@@ -13,7 +13,7 @@ function setup() {
   createCanvas(600, 350);
   // create quadTree
   let boundary = new Rectangle(width/2, height/2, width/2, height/2);
-  qtree = new QuadTree(bouadary, 4);
+  qtree = new QuadTree(boundary, 4);
   points = new Array();
 }
 

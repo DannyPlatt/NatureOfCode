@@ -11,7 +11,7 @@ function setupKeypresses(state) {
 }
 
 function checkKeys(state, keysPressed){
-  var cameraMovement = 0.1; // If camera disconnected from car, this is the speed to look around
+  var cameraMovement = 1; // If camera disconnected from car, this is the speed to look around
   if(keysPressed['ArrowLeft']){
     vec3.add(state.camera.position, state.camera.position, [-cameraMovement,0,0]);
     // vec3.add(state.camera.at, state.camera.at, [-cameraMovement,0,0]);
@@ -36,13 +36,13 @@ function checkKeys(state, keysPressed){
     vec3.add(state.camera.position, state.camera.position, [0,cameraMovement, 0]);
     // vec3.add(state.camera.at, state.camera.at, [0,0,cameraMovement]);
   }
-  else if(keysPressed['w']){
+  else if(keysPressed['w']){ // Move camera forward in the direction of the camera lookat vector
     vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
   }
-  else if(keysPressed['s']){
+  else if(keysPressed['s']){ // Move caera away from the lookat vector
     vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, -cameraMovement/10);
   }
-  else if(keysPressed['a']){
+  else if(keysPressed['a']){ // Move camera
     vec3.rotateZ(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
   }
   else if(keysPressed['d']){

@@ -19,12 +19,12 @@ class Vehicle {
   run(boids) {
     // determin array of negihbors
     let range = new Rectangle(this.position.x, this.position.y, rangeSize, rangeSize);
-    push();
-    noFill();
-    stroke(0, 50);
-    rectMode(CENTER);
-    rect(this.position.x, this.position.y, rangeSize, rangeSize)
-    pop();
+    // push();
+    // noFill();
+    // stroke(0, 50);
+    // rectMode(CENTER);
+    // rect(this.position.x, this.position.y, rangeSize, rangeSize)
+    // pop();
     let points = qtree.query(range);
     this.flock(points);
     this.update();
@@ -77,10 +77,10 @@ class Vehicle {
     for (let point of points) {
       boids.push(point.data);
 
-      push();
-      stroke(0,50);
-      line(this.position.x, this.position.y, point.x, point.y );
-      pop();
+      // push();
+      // stroke(0,50);
+      // line(this.position.x, this.position.y, point.x, point.y );
+      // pop();
     }
     let separation = this.separate(boids);
     let alignment = this.align(boids);
@@ -123,7 +123,7 @@ class Vehicle {
     for (let other of boids) {
       let d = p5.Vector.dist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
-        sum.add(other.position);
+        sum.add(other.velocity);
         count++;
       }
       loopCount++;

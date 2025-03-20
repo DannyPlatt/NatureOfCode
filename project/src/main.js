@@ -49,7 +49,10 @@ function game() {
     if (then === 0) {
       then = now;
     }
-    state.dt = now - then;
+    state.dt = (now - then);
+    if (state.dt > 0.5) {
+      state.dt = .1
+    }
     then = now;
     const fps = 1/state.dt;
     fpsUpdate += state.dt;
@@ -83,9 +86,9 @@ function initState(gl, canvas) {
     dt: 0,
     // ==== SETUP CAMERA =========
     camera: {
-      position: vec3.fromValues(100.0, 20.0, -10),
-      at: vec3.fromValues(0.0, 0.0, 0.0),
-      up: vec3.fromValues(0.0, 0.0, -1.0),
+      position: vec3.fromValues(-100.0, 50.0, 50),
+      at: vec3.fromValues(1.0, 0.0, 0.0),
+      up: vec3.fromValues(0.0, 0.0, 1.0),
       view: 1,
       distance: 3, // following distance for first person camera
       height: 2,
@@ -93,14 +96,14 @@ function initState(gl, canvas) {
     },
     objects: [],
     canvas: canvas,
-    canvasWidth: 40,
-    canvasHeight: 40,
-    canvasDepth: 40,
+    canvasWidth: 100,
+    canvasHeight: 100,
+    canvasDepth: 100,
     selectedIndex: 0,
     hasSelected: false,
     light: [
       { // overhead light
-        position: vec3.fromValues(0, 20, -20), // position of the light source (we can adjust however we want)
+        position: vec3.fromValues(-100, 50, -20), // position of the light source (we can adjust however we want)
         lookat: vec3.create(),
       },
     ]

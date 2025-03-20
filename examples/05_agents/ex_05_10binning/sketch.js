@@ -6,7 +6,7 @@ let isPlaying = false;
 let deltaTime = 0;
 let lastTime = 0;
 let vehicles = [];
-let vehicleCount = 800;
+let vehicleCount = 200;
 let timer = 0;
 let target;
 let timeSlider;

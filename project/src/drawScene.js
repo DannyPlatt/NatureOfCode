@@ -32,8 +32,8 @@ function drawScene(state, gl) {
       mat4.perspective(projectionMatrix, fovy, aspect, near, far);
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
 
-      // create focus point using car position + velocity to create a dynameic camera movement
-      var focalPoint = vec3.fromValues(0, 0, 0);
+      // move lookat vector to be relative to position
+      var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.lookat);
       // update view matrix with state.camera
       // link to corresponding uniform object.programInfo.uniformLocations.[...]
       // Use lookat to create viewMatrix
@@ -41,7 +41,7 @@ function drawScene(state, gl) {
       mat4.lookAt(
         viewMatrix,
         state.camera.position,
-        state.camera.at,
+        focalPoint,
         state.camera.up,
       );
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
@@ -93,8 +93,8 @@ function drawScene(state, gl) {
       gl.bindVertexArray(object.buffers.vao);
       // Draw the object
       const offset = 0; // Number of elements to skip before starting
-      gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
-      // gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      // gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
     }
   });
 }

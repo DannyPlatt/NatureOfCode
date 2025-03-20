@@ -5,14 +5,14 @@
 class Boid {
   constructor(x, y, z, color=[1,1,1,1], scale = [1,1,1]) {
     this.position = vec3.fromValues(x, y, z);
-    this.velocity = vec3.fromValues(randomFl(-10, 10),randomFl(-10, 10), randomFl(-10, 10));
+    this.velocity = vec3.fromValues(randomFl(-0.5, 0.5),randomFl(-0.5, 0.5), randomFl(-0.5, 0.5));
     this.accel = vec3.create();
     this.scale = vec3.fromValues(scale[0], scale[1], scale[2]);
     this.stateObj = undefined;
     this.mass = 1.0;
     this.radius = 2.0;
-    this.maxSpeed = 200;
-    this.maxForce = 20;
+    this.maxSpeed = 50;
+    this.maxForce = 150;
     this.timer = 0;
     this.color = color;
     this.wanderTheta = 0;
@@ -55,9 +55,12 @@ class Boid {
     let separation = this.separate(boids);
     let alignment = this.align(boids);
     let cohesion = this.cohere(boids);
-    vec3.scale(separation, separation,1.0);
-    vec3.scale(alignment, alignment,1.1);
-    vec3.scale(cohesion, cohesion,1.3);
+    let sepCoef = document.getElementById('slider0');
+    let aliCoef = document.getElementById('slider1');
+    let coCoef = document.getElementById('slider2');
+    vec3.scale(separation, separation,sepCoef.value);
+    vec3.scale(alignment, alignment,aliCoef.value);
+    vec3.scale(cohesion, cohesion,coCoef.value);
 
     this.applyForce( separation);
     this.applyForce(alignment);
@@ -65,7 +68,7 @@ class Boid {
   }
 
   separate(boids) {
-    let desiredSeparation = 25;
+    let desiredSeparation = 50;
     let steer = vec3.create();
     let sum = vec3.create();
     let count = 0;
@@ -89,13 +92,13 @@ class Boid {
     return steer;
   }
   align(boids) {
-    let neighborDistance = 50;
+    let neighborDistance = 100;
     let sum = vec3.create();
     let count = 0;
     for (let other of boids) {
       let d = vec3.sqrDist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
-        vec3.add(sum, sum, other.position);
+        vec3.add(sum, sum, other.velocity);
         count++;
       }
     }
@@ -116,7 +119,7 @@ class Boid {
     for (let other of boids) {
       let d = vec3.sqrDist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
-        vec3.add(sum, sum, other.position);
+        vec3.add(sum, sum, other.velocity);
         count++;
       }
     }
@@ -183,25 +186,26 @@ class Boid {
 
   edges(state) {
     // X
-    if(this.position.x < -this.radius*2) {
-      this.position.x = state.canvasWidth + this.radius*2;
+    console.log(this.position);
+    if(this.position[0] < -state.canvasWidth/2) {
+      this.position[0] = state.canvasWidth/2;
     }
-    if(this.position.x > state.canvasWidth + this.radius*2) {
-      this.position.x = -this.radius*2;
+    else if(this.position[0] > state.canvasWidth/2) {
+      this.position[0] = -state.canvasWidth/2;
     }
     // Y
-    if(this.position.y < -this.radius*2) {
-      this.position.y = state.canvasHeight + this.radius*2;
+    else if(this.position[1] < -state.canvasHeight/2) {
+      this.position[1] = state.canvasHeight/2;
     }
-    if(this.position.y > state.canvasHeight + this.radius*2) {
-      this.position.y = -this.radius*2;
+    else if(this.position[1] > state.canvasHeight/2) {
+      this.position[1] = -state.canvasHeight/2;
     }
     // Z
-    if(this.position.z < -this.radius*2) {
-      this.position.z = state.canvasDepth+ this.radius*2;
+    else if(this.position[2] < -state.canvasDepth/2) {
+      this.position[2] = state.canvasDepth/2;
     }
-    if(this.position.z > state.canvasDepth+ this.radius*2) {
-      this.position.z = -this.radius*2;
+    else if(this.position[2] > state.canvasDepth/2 + this.radius*2) {
+      this.position[2] = -state.canvasDepth/2;
     }
   }
 }

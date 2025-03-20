@@ -5,7 +5,7 @@
 let isPlaying = false;
 let deltaTime = 0;
 let lastTime = 0;
-let boidCount = 100;
+let boidCount = 200;
 let timer = 0;
 let target;
 let timeSlider;
