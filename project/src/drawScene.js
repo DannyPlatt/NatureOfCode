@@ -24,7 +24,7 @@ function drawScene(state, gl) {
     {
       // setup projection matrix
       var projectionMatrix = mat4.create();
-      var fovy = 75.0 * Math.PI / 180.0; // Vertical field of view in radians
+      var fovy = 65.0 * Math.PI / 180.0; // Vertical field of view in radians
       var aspect = state.canvas.clientWidth / state.canvas.clientHeight; // Aspect ratio of the canvas
       var near = 0.1; // Near clipping plane
       var far = 500.0; // Far clipping plane
@@ -33,7 +33,7 @@ function drawScene(state, gl) {
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
 
       // move lookat vector to be relative to position
-      var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.lookat);
+      var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.at);
       // update view matrix with state.camera
       // link to corresponding uniform object.programInfo.uniformLocations.[...]
       // Use lookat to create viewMatrix

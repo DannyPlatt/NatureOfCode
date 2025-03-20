@@ -11,41 +11,78 @@ function setupKeypresses(state) {
 }
 
 function checkKeys(state, keysPressed){
-  var cameraMovement = 1; // If camera disconnected from car, this is the speed to look around
-  if(keysPressed['ArrowLeft']){
-    vec3.add(state.camera.position, state.camera.position, [-cameraMovement,0,0]);
-    // vec3.add(state.camera.at, state.camera.at, [-cameraMovement,0,0]);
+  var cameraMovement = 20 * state.dt; // If camera disconnected from car, this is the speed to look around
+  var cameraRotation = 0.7 * state.dt
+  if(keysPressed['ArrowLeft']){ // Rotate up
+    // Compute the rotation axis (cross product)
+    let axis = vec3.fromValues(0,0,1);
+    // Create a rotation matrix
+    let theta = cameraRotation;
+    let rotationMatrix = mat4.create();
+    mat4.fromRotation(rotationMatrix, theta, axis); // Create rotation matrix
+    // Rotate vectors using the rotation matrix
+    vec3.transformMat4(state.camera.at, state.camera.at, rotationMatrix);
+    vec3.transformMat4(state.camera.up, state.camera.up, rotationMatrix);
   }
-  else if(keysPressed['ArrowRight']){ // Move camera along x axis to the right
-    vec3.add(state.camera.position, state.camera.position, [cameraMovement,0,0]);
-    // vec3.add(state.camera.at, state.camera.at, [cameraMovement,0,0]);
+  if(keysPressed['ArrowRight']){ // Move camera along x axis to the right
+    // Compute the rotation axis (cross product)
+    let axis = vec3.fromValues(0,0,1);
+    // Create a rotation matrix
+    let theta = -cameraRotation;
+    let rotationMatrix = mat4.create();
+    mat4.fromRotation(rotationMatrix, theta, axis); // Create rotation matrix
+    // Rotate vectors using the rotation matrix
+    vec3.transformMat4(state.camera.at, state.camera.at, rotationMatrix);
+    vec3.transformMat4(state.camera.up, state.camera.up, rotationMatrix);
   }
-  else if(keysPressed['ArrowUp']){
-    vec3.add(state.camera.position, state.camera.position, [0,0,-cameraMovement]);
-    // vec3.add(state.camera.at, state.camera.at, [0,0,-cameraMovement]);
+  if(keysPressed['ArrowUp']){
+    // Compute the rotation axis (cross product)
+    let axis = vec3.create();
+    vec3.cross(axis, state.camera.at, state.camera.up);
+    vec3.normalize(axis, axis); // Normalize to unit length
+    // Create a rotation matrix
+    let theta = cameraRotation;
+    let rotationMatrix = mat4.create();
+    mat4.fromRotation(rotationMatrix, theta, axis); // Create rotation matrix
+    // Rotate vectors using the rotation matrix
+    vec3.transformMat4(state.camera.at, state.camera.at, rotationMatrix);
+    vec3.transformMat4(state.camera.up, state.camera.up, rotationMatrix);
   }
-  else if(keysPressed['ArrowDown']){
-    vec3.add(state.camera.position, state.camera.position, [0,0,cameraMovement]);
-    // vec3.add(state.camera.at, state.camera.at, [0,0,cameraMovement]);
+  if(keysPressed['ArrowDown']){
+    // Compute the rotation axis (cross product)
+    let axis = vec3.create();
+    vec3.cross(axis, state.camera.at, state.camera.up);
+    vec3.normalize(axis, axis); // Normalize to unit length
+    // Create a rotation matrix
+    let theta = -cameraRotation;
+    let rotationMatrix = mat4.create();
+    mat4.fromRotation(rotationMatrix, theta, axis); // Create rotation matrix
+    // Rotate vectors using the rotation matrix
+    vec3.transformMat4(state.camera.at, state.camera.at, rotationMatrix);
+    vec3.transformMat4(state.camera.up, state.camera.up, rotationMatrix);
   }
-  else if(keysPressed['q']){
-    vec3.add(state.camera.position, state.camera.position, [0,-cameraMovement,0]);
-    // vec3.add(state.camera.at, state.camera.at, [0,-cameraMovement,0]);
+  if(keysPressed['r']){ // move towards lookup
+    vec3.add(state.camera.position, state.camera.position, vec3.scale(vec3.create(), state.camera.up, cameraMovement));
   }
-  else if(keysPressed['e']){
-    vec3.add(state.camera.position, state.camera.position, [0,cameraMovement, 0]);
-    // vec3.add(state.camera.at, state.camera.at, [0,0,cameraMovement]);
+  if(keysPressed['f']){ // Move away from lookup
+    vec3.sub(state.camera.position, state.camera.position, vec3.scale(vec3.create(), state.camera.up, cameraMovement));
   }
-  else if(keysPressed['w']){ // Move camera forward in the direction of the camera lookat vector
-    vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
+  if(keysPressed['w']){ // Move camera forward in the direction of the camera lookat vector
+    vec3.add(state.camera.position, state.camera.position, vec3.scale(vec3.create(), state.camera.at, cameraMovement));
+    // vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
   }
-  else if(keysPressed['s']){ // Move caera away from the lookat vector
-    vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, -cameraMovement/10);
+  if(keysPressed['s']){ // Move caera away from the lookat vector
+    vec3.sub(state.camera.position, state.camera.position, vec3.scale(vec3.create(), state.camera.at, cameraMovement));
+    // vec3.rotateX(state.camera.at, state.camera.at, state.camera.position, -cameraMovement/10);
   }
-  else if(keysPressed['a']){ // Move camera
-    vec3.rotateZ(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
+  if(keysPressed['a']){ // Move camera orthagonal to look up and look at vector
+    var cross = vec3.cross(vec3.create(), state.camera.up, state.camera.at);
+    vec3.add(state.camera.position, state.camera.position, vec3.scale(vec3.create(), cross, cameraMovement));
+    // vec3.rotateZ(state.camera.at, state.camera.at, state.camera.position, cameraMovement/10);
   }
-  else if(keysPressed['d']){
-    vec3.rotateZ(state.camera.at, state.camera.at, state.camera.position, -cameraMovement/10);
+  if(keysPressed['d']){
+    var cross = vec3.cross(vec3.create(), state.camera.up, state.camera.at);
+    vec3.sub(state.camera.position, state.camera.position, vec3.scale(vec3.create(), cross, cameraMovement));
+    // vec3.rotateZ(state.camera.at, state.camera.at, state.camera.position, -cameraMovement/10);
   }
 }

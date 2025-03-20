@@ -86,7 +86,7 @@ function initState(gl, canvas) {
     dt: 0,
     // ==== SETUP CAMERA =========
     camera: {
-      position: vec3.fromValues(-100.0, 50.0, 50),
+      position: vec3.fromValues(-100.0, 0.0, 0.0),
       at: vec3.fromValues(1.0, 0.0, 0.0),
       up: vec3.fromValues(0.0, 0.0, 1.0),
       view: 1,
