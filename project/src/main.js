@@ -56,10 +56,10 @@ function game() {
     then = now;
     const fps = 1/state.dt;
     fpsUpdate += state.dt;
-    if (fpsUpdate > 1) {
-      fpsElem.textContent = fps.toFixed(1);
-      fpsUpdate = 0;
-    }
+    fpsElem.textContent = fps.toFixed(1);
+    // if (fpsUpdate > 1) {
+    //   fpsUpdate = 0;
+    // }
     // check keysPressed
     checkKeys(state, keysPressed);
 

@@ -13,37 +13,35 @@ function drawScene(state, gl) {
   gl.enable(gl.CULL_FACE); // only draw font triangles
   // Clear the color and depth buffer with specified clear colour.
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); 
-  //TODO: we have a 'shadow' that follows objects 
-  //    I think it has to do with this clear function being in the wrong spot
-
+  
+  // setup projection matrix
+  var projectionMatrix = mat4.create();
+  var fovy = 65.0 * Math.PI / 180.0; // Vertical field of view in radians
+  var aspect = state.canvas.clientWidth / state.canvas.clientHeight; // Aspect ratio of the canvas
+  var near = 0.1; // Near clipping plane
+  var far = 500.0; // Far clipping plane
+  // Generate the projection matrix using perspective
+  mat4.perspective(projectionMatrix, fovy, aspect, near, far);
+  // Setup camera view matrix
+  var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.at);
+  // update view matrix with state.camera
+  // link to corresponding uniform object.programInfo.uniformLocations.[...]
+  // Use lookat to create viewMatrix
+  var viewMatrix = mat4.create();
+  mat4.lookAt(
+    viewMatrix,
+    state.camera.position,
+    focalPoint,
+    state.camera.up,
+  );
   state.objects.forEach((object) => {
     // Choose to use our shader
     gl.useProgram(object.programInfo.program);
 
     // Update uniforms with state variables values
     {
-      // setup projection matrix
-      var projectionMatrix = mat4.create();
-      var fovy = 65.0 * Math.PI / 180.0; // Vertical field of view in radians
-      var aspect = state.canvas.clientWidth / state.canvas.clientHeight; // Aspect ratio of the canvas
-      var near = 0.1; // Near clipping plane
-      var far = 500.0; // Far clipping plane
-      // Generate the projection matrix using perspective
-      mat4.perspective(projectionMatrix, fovy, aspect, near, far);
+      // assign perspective and view matricies
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
-
-      // move lookat vector to be relative to position
-      var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.at);
-      // update view matrix with state.camera
-      // link to corresponding uniform object.programInfo.uniformLocations.[...]
-      // Use lookat to create viewMatrix
-      var viewMatrix = mat4.create();
-      mat4.lookAt(
-        viewMatrix,
-        state.camera.position,
-        focalPoint,
-        state.camera.up,
-      );
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
 
       // Update model transform
@@ -72,23 +70,11 @@ function drawScene(state, gl) {
       gl.uniform3fv(object.programInfo.uniformLocations.specularColor, object.material.specularColor);
       gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
       // ===============================================
-      // // add gravity to all objects
-      // if(object.name != 'origin'){
-      //   var vecOrigin = vec3.fromValues(0,0,0);
-      //   var vecDirection = vec3.create()
-      //   vec3.sub(vecDirection, vecOrigin, object.model.position);
-      //   vec3.normalize(vecDirection, vecDirection);
-      //   vec3.scale(vecDirection, vecDirection, 100);
-      //   object.model.applyForce(vecDirection)
-      // }
       // Update other uniforms 
       gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
       gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
     }
-    // update physics for object
-    object.model.update(state);
-    // Draw 
-    {
+    { // Draw 
       // Bind the buffer we want to draw
       gl.bindVertexArray(object.buffers.vao);
       // Draw the object

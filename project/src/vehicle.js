@@ -16,10 +16,15 @@ class Boid {
     this.timer = 0;
     this.color = color;
     this.wanderTheta = 0;
+    this.separationForce = vec3.create();
+    this.alignForce = vec3.create();
+    this.cohereForce = vec3.create();
+    this.cohereCount = 0;
   }
 
-  run(boids) {
-    this.flock(boids);
+  run(boids, startPoint) {
+    // this.flock(boids);
+    this.newFlock(boids, startPoint);
     this.update();
     // this.edges();
     // this.show();
@@ -67,12 +72,82 @@ class Boid {
     this.applyForce(cohesion);
   }
 
+  newFlock(boids, startingPoint) {
+    let sepDist = 2;
+    let aliDist = 4;
+    let cohereDist = 4;
+    let steer = vec3.create();
+    for(let i = startingPoint;i < boids.length; i++) {
+      // console.log("i: ", i);
+      // console.log("LOOPCOUNT: ", LOOPCOUNT);
+      LOOPCOUNT++;
+      let other = boids[i];
+      if (this === other) {continue;} // skip loop if comparing itself
+      // Find separation distance
+      let distanceMag = vec3.sqrDist(this.position, other.position);
+      // SEPARATION
+      if (distanceMag <= sepDist) {
+        let diff = vec3.sub(vec3.create(),this.position, other.position);
+        vec3.normalize(diff, diff);
+        if (distanceMag === 0){distanceMag = 0.001;}
+        vec3.scale(diff, diff, 1/distanceMag);
+        vec3.add(other.separationForce, other.separationForce, vec3.negate(vec3.create(),diff));
+        vec3.add(this.separationForce, this.separationForce, diff);
+      }
+      // ALIGN
+      if (distanceMag < aliDist) {
+        vec3.add(other.alignForce, other.alignForce, this.velocity);
+        vec3.add(this.alignForce, this.alignForce, other.velocity);
+      }
+      // COHERE
+      if (distanceMag < cohereDist) {
+        
+        vec3.add(other.cohereForce, other.cohereForce, this.position); // apply to other boid
+        vec3.add(this.cohereForce, this.cohereForce, other.position); // apply to this boid
+        other.cohereCount++;
+        this.cohereCount++;
+      }
+    }
+    // apply separation force
+    if(vec3.sqrLen(this.separationForce) != 0){
+      vec3.normalize(this.separationForce, this.separationForce);
+      vec3.scale(this.separationForce, this.separationForce, this.maxSpeed);
+      vec3.sub(this.separationForce, this.separationForce, this.velocity);
+      limit(this.separationForce, this.maxForce);
+    }
+    // apply align force
+    if (vec3.sqrLen(this.alignForce) != 0 ){
+      vec3.normalize(this.alignForce, this.alignForce);
+      vec3.scale(this.alignForce, this.alignForce, this.maxSpeed);
+      vec3.sub(this.alignForce ,this.alignForce, this.velocity);
+      limit(this.alignForce, this.maxForce)
+    }
+    if (vec3.sqrLen(this.cohereForce) != 0 ){
+      vec3.scale(this.cohereForce, this.cohereForce, 1/this.cohereCount);
+      this.cohereForce = this.seek(this.cohereForce);
+    }
+    // apply coeffecients
+    let sepCoef = document.getElementById('slider0');
+    let aliCoef = document.getElementById('slider1');
+    let coCoef = document.getElementById('slider2');
+    vec3.scale(this.separationForce, this.separationForce,sepCoef.value);
+    vec3.scale(this.alignForce, this.alignForce,aliCoef.value);
+    vec3.scale(this.cohereForce, this.cohereForce,coCoef.value);
+    this.applyForce(this.separationForce);
+    vec3.scale(this.separationForce,this.separationForce, 0);
+    this.applyForce(this.alignForce);
+    vec3.scale(this.alignForce, this.alignForce, 0);
+    this.applyForce(this.cohereForce);
+    vec3.scale(this.cohereForce, this.cohereForce, 0);
+  }
+
   separate(boids) {
     let desiredSeparation = 50;
     let steer = vec3.create();
     let sum = vec3.create();
     let count = 0;
     for (let other of boids) {
+      LOOPCOUNT++;
       let d = vec3.sqrDist(this.position, other.position);
       if (this !== other && d < desiredSeparation) {
         let diff = vec3.sub(vec3.create(),this.position, other.position);
@@ -96,6 +171,7 @@ class Boid {
     let sum = vec3.create();
     let count = 0;
     for (let other of boids) {
+      LOOPCOUNT++;
       let d = vec3.sqrDist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
         vec3.add(sum, sum, other.velocity);
@@ -117,6 +193,7 @@ class Boid {
     let sum = vec3.create();
     let count = 0;
     for (let other of boids) {
+      LOOPCOUNT++;
       let d = vec3.sqrDist(this.position, other.position);
       if ((this !== other) && (d < neighborDistance)) {
         vec3.add(sum, sum, other.velocity);
@@ -186,7 +263,6 @@ class Boid {
 
   edges(state) {
     // X
-    console.log(this.position);
     if(this.position[0] < -state.canvasWidth/2) {
       this.position[0] = state.canvasWidth/2;
     }
@@ -215,8 +291,8 @@ class Flock {
     this.boids = [];
   }
   run() {
-    for (let boid of this.boids) {
-      boid.run(this.boids);
+    for (let i = 0; i < this.boids.length; i++) {
+      this.boids[i].run(this.boids, i);
     }
   }
   addBoid(boid) {
