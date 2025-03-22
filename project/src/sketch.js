@@ -2,7 +2,7 @@ let flock;
 let LOOPCOUNT;
 
 function setup(state, gl) {
-  let flockCount = 500;
+  let flockCount = 3;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
   for (let i = 0; i < flockCount; i++) {
@@ -11,9 +11,9 @@ function setup(state, gl) {
       objectList = state.objects.boids, 
       // position = vec3.scale(vec3.create(), vec3.random(vec3.create()), 5), 
       position = vec3.random(vec3.create(), 5),
-      velocity = vec3.random(vec3.create(), 20),
+      velocity = vec3.fromValues(0,0,20),
       color = [Math.random(),Math.random(), Math.random(), 1], 
-      scale = [1,1,1], 
+      scale = [5,5,5], 
       mass = 1, 
       type = cube,
       radius = 2,

@@ -34,8 +34,7 @@ function game() {
     spawnNewObject(
       gl = gl, 
       objectList = state.objects.environment, 
-      // position = vec3.fromValues(obj.position[0],obj.position[1],obj.position[2]),
-      position = vec3.create(),
+      position = vec3.fromValues(obj.position[0],obj.position[1],obj.position[2]),
       velocity = vec3.create(), 
       color = obj.color, 
       scale = obj.scale, 
@@ -53,31 +52,14 @@ function game() {
   const fpsElem = document.querySelector('#fps');
   let fpsUpdate = 0
   var then = 0.0;
-  
+  let lastTime = performance.now();
+  let maxFrameTime = 0;
   setup(state, gl); // Add before loop items
-  function render(now) {
-    now *= 0.001; // convert to seconds
-    if (then === 0) {
-      then = now;
-    }
-    state.dt = (now - then);
-    if (state.dt > 0.5) {
-      state.dt = .1
-    }
-    then = now;
-    const fps = 1/state.dt;
-    fpsUpdate += state.dt;
-    fpsElem.textContent = fps.toFixed(1);
-    // if (fpsUpdate > 1) {
-    //   fpsUpdate = 0;
-    // }
-    // check keysPressed
+
+  function render() {
+    then = handleTime(state, then, fpsElem);
     checkKeys(state, keysPressed);
-
-    // Draw our scene
     draw(state, gl);  // add in loop items
-
-    // Request another frame when this one is done
     if(state.run) {
       requestAnimationFrame(render);
     }
@@ -123,6 +105,26 @@ function initState(gl, canvas) {
     ]
   };
   return state;
+}
+
+
+function handleTime(state, then, fpsElem) {
+    let now = performance.now();
+    now *= 0.001; // convert to seconds
+    if (then === 0) {
+      return now;
+    }
+    state.dt = (now - then);
+    if (state.dt > 0.5) {
+      state.dt = .1
+    }
+    const fps = 1/state.dt;
+    fpsElem.textContent = fps.toFixed(1);
+    if(state.dt >= 50){
+      console.log(`Frame time: ${deltaTime.toFixed(2)}ms`); 
+    }
+  return now;
+
 }
 
 /**
