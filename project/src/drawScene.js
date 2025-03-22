@@ -38,7 +38,6 @@ function drawScene(state, gl) {
     state.objects[objListName].forEach((object) =>{
       // Choose to use our shader
       gl.useProgram(object.programInfo.program);
-      console.log(object);
 
       // Update uniforms with state variables values
       {

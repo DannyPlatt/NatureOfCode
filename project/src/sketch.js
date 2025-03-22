@@ -1,5 +1,5 @@
 let flock;
-let LOOPCOUNT = 0;
+let LOOPCOUNT = 100;
 
 function setup(state, gl) {
   let flockCount = 0;
@@ -43,7 +43,6 @@ function initBalls(gl,state, count) {
     let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
     let scale = [scaleSize, scaleSize, scaleSize];
     let color = [Math.random(),Math.random(),Math.random()]
-    let ball = spawnNewObject(gl, state.objects.environment, type, position, scale, color)
     ball.velocity = vec3.fromValues(randomFl(-100, 100), randomFl(-100, 100), randomFl(-50, 50))
   }
 }

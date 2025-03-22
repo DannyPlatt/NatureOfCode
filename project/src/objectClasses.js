@@ -4,19 +4,18 @@
 class Object {
   constructor( 
     gl,
-    position = [0,0,0], 
-    velocity = [0,0,0], 
+    position = vec3.create(), 
+    velocity = vec3.create(), 
     color=[1,1,1,1], 
     scale = [1,1,1], 
     mass = 1,
     type,
   ) {
-    this.position = vec3.fromValues([position[0], position[1], position[2]]);
-    this.velocity = vec3.fromValues([velocity[0], velocity[1], velocity[2]]);
+    this.position = position;
+    this.velocity = velocity;
     this.accel = vec3.create();
     this.scale = vec3.fromValues(scale[0], scale[1], scale[2]);
     this.mass = mass;
-    this.color = color;
     this.timer = 0;
     // WebGL info
     this.name = type.name;
@@ -25,7 +24,7 @@ class Object {
     this.centroid = this.calculateCentroid(type.vertices); // FROM drawScene
     this.material =  {
       ambientColor: [0.6, 0.6, 0.6],
-      diffuseColor: type.material.diffuse,
+      diffuseColor: [color[0], color[1], color[2]],
       specularColor: [1.0, 1.0, 1.0],
       shininess: 32.0,
     };

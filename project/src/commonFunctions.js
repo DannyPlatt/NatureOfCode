@@ -13,9 +13,8 @@ function randomInt(min, max) {
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(gl, objectList, position=[0,0,0], velocity=[0,0,0], color=[1,1,1,1], scale=[1,1,1], mass=1, type){
+function spawnNewObject(gl, objectList, position=vec3.create(), velocity=vec3.create(), color=[1,1,1,1], scale=[1,1,1], mass=1, type){
   // create new object
-  type.material.diffuse = [color[0],color[1], color[2]];
   var newShape = new Object(
     gl,
     position = position,

@@ -34,14 +34,16 @@ function game() {
     spawnNewObject(
       gl = gl, 
       objectList = state.objects.environment, 
-      position = obj.position, 
-      velocity = [0,0,0], 
+      // position = vec3.fromValues(obj.position[0],obj.position[1],obj.position[2]),
+      position = vec3.create(),
+      velocity = vec3.create(), 
       color = obj.color, 
       scale = obj.scale, 
       mass = 1, 
       type = obj.type
     )
   });
+  console.log("enviroment setup: " ,state.objects.environment);
   // ============= SETUP KEY PRESS DETECTION ==============
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
