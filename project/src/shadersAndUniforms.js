@@ -102,7 +102,6 @@ void main() {
   // Typos are a common source of failure
   // add testes for all your uniform locations 
   if (programInfo.attribLocations.vertexPosition === -1 ||
-    programInfo.uniformLocations.color === -1 ||
     programInfo.uniformLocations.projection === -1 ||
     programInfo.uniformLocations.view === -1 ||
     programInfo.uniformLocations.model === -1) {

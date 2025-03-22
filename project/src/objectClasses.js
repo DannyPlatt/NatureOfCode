@@ -1,20 +1,104 @@
 // The nature of Code
 // Daniel Platt
 // Vehicle Class:
-
-class Boid {
-  constructor(x, y, z, color=[1,1,1,1], scale = [1,1,1]) {
-    this.position = vec3.fromValues(x, y, z);
-    this.velocity = vec3.fromValues(randomFl(-0.5, 0.5),randomFl(-0.5, 0.5), randomFl(-0.5, 0.5));
+class Object {
+  constructor( 
+    gl,
+    position = [0,0,0], 
+    velocity = [0,0,0], 
+    color=[1,1,1,1], 
+    scale = [1,1,1], 
+    mass = 1,
+    type,
+  ) {
+    this.position = vec3.fromValues([position[0], position[1], position[2]]);
+    this.velocity = vec3.fromValues([velocity[0], velocity[1], velocity[2]]);
     this.accel = vec3.create();
     this.scale = vec3.fromValues(scale[0], scale[1], scale[2]);
-    this.stateObj = undefined;
-    this.mass = 1.0;
+    this.mass = mass;
+    this.color = color;
+    this.timer = 0;
+    // WebGL info
+    this.name = type.name;
+    this.programInfo = transformShader(gl) // FROM shadersAndUniforms.js
+    this.buffers = undefined;
+    this.centroid = this.calculateCentroid(type.vertices); // FROM drawScene
+    this.material =  {
+      ambientColor: [0.6, 0.6, 0.6],
+      diffuseColor: type.material.diffuse,
+      specularColor: [1.0, 1.0, 1.0],
+      shininess: 32.0,
+    };
+  }
+
+  /*
+   * Adds force to acceleration taking mass into account
+   * @param force a vec3 object to apply to the acceleration
+   */
+  applyForce(force) {
+    // takes vec3 force into it
+    var tempForce = vec3.clone(force);
+    vec3.scale(tempForce, tempForce, (1/this.mass));
+    vec3.add(this.accel, this.accel, tempForce);
+  }
+
+  /*
+   * Applies acceleration and velocity to object and moves object based on deltaTime
+   * @param state Uses state.dt to manage the delta time of the movements
+   */
+  update(state) {
+    // console.log("state", state);
+    vec3.scale(this.accel, this.accel, state.dt);
+    vec3.add(this.velocity, this.velocity, this.accel);
+    let scaledVel = vec3.create();
+    vec3.scale(scaledVel, this.velocity, state.dt);
+    vec3.add(this.position, this.position, scaledVel);
+    vec3.scale(this.accel, this.accel, 0);
+  }
+
+  /*
+   * If object moves outside of bounding box, move the object to the other side of the box
+   * @param state Uses state.dt to manage the delta time of the movements
+   */
+  edges(state) {
+    // X
+    if (this.position[0] < -state.canvasWidth/2) { this.position[0] = state.canvasWidth/2; }
+    else if (this.position[0] > state.canvasWidth/2) { this.position[0] = -state.canvasWidth/2; }
+    // Y
+    else if (this.position[1] < -state.canvasHeight/2) { this.position[1] = state.canvasHeight/2; }
+    else if (this.position[1] > state.canvasHeight/2) { this.position[1] = -state.canvasHeight/2; }
+    // Z
+    else if (this.position[2] < -state.canvasDepth/2) { this.position[2] = state.canvasDepth/2; }
+    else if (this.position[2] > state.canvasDepth/2) { this.position[2] = -state.canvasDepth/2; }
+  }
+
+  /**
+   * @param {array of x,y,z vertices} vertices 
+   */
+  calculateCentroid(vertices) {
+    var center = vec3.fromValues(0.0, 0.0, 0.0);
+    for (let t = 0; t < vertices.length; t++) {
+      vec3.add(center,center,vertices[t]);
+    }
+    vec3.scale(center,center,1/vertices.length);
+    return center;
+  }
+}
+
+class Boid extends Object {
+  constructor( 
+    gl,
+    position = [0,0,0], 
+    velocity = [0,0,0], 
+    color=[1,1,1,1], 
+    scale = [1,1,1], 
+    mass = 1,
+    type
+  ) {
+    super(position, velocity, color, scale, mass);
     this.radius = 2.0;
     this.maxSpeed = 50;
     this.maxForce = 150;
-    this.timer = 0;
-    this.color = color;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
@@ -30,22 +114,6 @@ class Boid {
     // this.show();
   }
 
-  applyForce(force) {
-    // takes vec3 force into it
-    var tempForce = vec3.clone(force);
-    vec3.scale(tempForce, tempForce, (1/this.mass));
-    vec3.add(this.accel, this.accel, tempForce);
-  }
-
-  update() {
-    vec3.scale(this.accel, this.accel, state.dt);
-    vec3.add(this.velocity, this.velocity, this.accel);
-    let scaledVel = vec3.create();
-    vec3.scale(scaledVel, this.velocity, state.dt);
-    vec3.add(this.position, this.position, scaledVel);
-    vec3.scale(this.accel, this.accel, 0);
-  }
-
   seek(target) { // target: position vector
     let desired = vec3.sub(vec3.create(), target, this.position);
     vec3.normalize(desired, desired);
@@ -54,22 +122,6 @@ class Boid {
     vec3.normalize(steer, steer);
     vec3.scale(steer, steer, this.maxForce);
     return steer
-  }
-
-  flock(boids) {
-    let separation = this.separate(boids);
-    let alignment = this.align(boids);
-    let cohesion = this.cohere(boids);
-    let sepCoef = document.getElementById('slider0');
-    let aliCoef = document.getElementById('slider1');
-    let coCoef = document.getElementById('slider2');
-    vec3.scale(separation, separation,sepCoef.value);
-    vec3.scale(alignment, alignment,aliCoef.value);
-    vec3.scale(cohesion, cohesion,coCoef.value);
-
-    this.applyForce( separation);
-    this.applyForce(alignment);
-    this.applyForce(cohesion);
   }
 
   newFlock(boids, startingPoint) {
@@ -261,29 +313,6 @@ class Boid {
   //   pop();
   // }
 
-  edges(state) {
-    // X
-    if(this.position[0] < -state.canvasWidth/2) {
-      this.position[0] = state.canvasWidth/2;
-    }
-    else if(this.position[0] > state.canvasWidth/2) {
-      this.position[0] = -state.canvasWidth/2;
-    }
-    // Y
-    else if(this.position[1] < -state.canvasHeight/2) {
-      this.position[1] = state.canvasHeight/2;
-    }
-    else if(this.position[1] > state.canvasHeight/2) {
-      this.position[1] = -state.canvasHeight/2;
-    }
-    // Z
-    else if(this.position[2] < -state.canvasDepth/2) {
-      this.position[2] = state.canvasDepth/2;
-    }
-    else if(this.position[2] > state.canvasDepth/2 + this.radius*2) {
-      this.position[2] = -state.canvasDepth/2;
-    }
-  }
 }
 
 class Flock {

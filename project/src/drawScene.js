@@ -34,55 +34,58 @@ function drawScene(state, gl) {
     focalPoint,
     state.camera.up,
   );
-  state.objects.forEach((object) => {
-    // Choose to use our shader
-    gl.useProgram(object.programInfo.program);
+  for (let objListName in state.objects){
+    state.objects[objListName].forEach((object) =>{
+      // Choose to use our shader
+      gl.useProgram(object.programInfo.program);
+      console.log(object);
 
-    // Update uniforms with state variables values
-    {
-      // assign perspective and view matricies
-      gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
-      gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
+      // Update uniforms with state variables values
+      {
+        // assign perspective and view matricies
+        gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
+        gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
 
-      // Update model transform
-      // ===============================================
-      // It is odd that the transformations are applied in reverse order
-      // Objects are translated up so that y scaling is completely in the positive direction. We do not need y scaling below the table
-      var modelMatrix = mat4.create();
-      mat4.translate(modelMatrix, modelMatrix, object.model.position);
-      mat4.translate(modelMatrix, modelMatrix, object.centroid);
-      mat4.mul( modelMatrix, modelMatrix, object.model.rotation.mat);
-      mat4.scale(modelMatrix, modelMatrix, object.model.scale);
-      mat4.translate(modelMatrix, modelMatrix, [
-        -object.centroid[0],
-        -object.centroid[1],
-        -object.centroid[2],
-      ]);
+        // Update model transform
+        // ===============================================
+        // It is odd that the transformations are applied in reverse order
+        // Objects are translated up so that y scaling is completely in the positive direction. We do not need y scaling below the table
+        var modelMatrix = mat4.create();
+        mat4.translate(modelMatrix, modelMatrix, object.position);
+        mat4.translate(modelMatrix, modelMatrix, object.centroid);
+        // mat4.mul( modelMatrix, modelMatrix, object.model.rotation.mat);
+        mat4.scale(modelMatrix, modelMatrix, object.scale);
+        mat4.translate(modelMatrix, modelMatrix, [
+          -object.centroid[0],
+          -object.centroid[1],
+          -object.centroid[2],
+        ]);
 
         // Set light uniforms
-      gl.uniform3fv(object.programInfo.uniformLocations.light0Position, state.light[0].position);
-      gl.uniform3fv(object.programInfo.uniformLocations.light0LookAt, state.light[0].lookat);
-      gl.uniform3fv(object.programInfo.uniformLocations.viewPosition, state.camera.position);
+        gl.uniform3fv(object.programInfo.uniformLocations.light0Position, state.light[0].position);
+        gl.uniform3fv(object.programInfo.uniformLocations.light0LookAt, state.light[0].lookat);
+        gl.uniform3fv(object.programInfo.uniformLocations.viewPosition, state.camera.position);
 
-      // Set material uniforms
-      gl.uniform3fv(object.programInfo.uniformLocations.ambientColor, object.material.ambientColor);
-      gl.uniform3fv(object.programInfo.uniformLocations.diffuseColor, object.material.diffuseColor);
-      gl.uniform3fv(object.programInfo.uniformLocations.specularColor, object.material.specularColor);
-      gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
-      // ===============================================
-      // Update other uniforms 
-      gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
-      gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
-    }
-    { // Draw 
-      // Bind the buffer we want to draw
-      gl.bindVertexArray(object.buffers.vao);
-      // Draw the object
-      const offset = 0; // Number of elements to skip before starting
-      // gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
-      gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
-    }
-  });
+        // Set material uniforms
+        gl.uniform3fv(object.programInfo.uniformLocations.ambientColor, object.material.ambientColor);
+        gl.uniform3fv(object.programInfo.uniformLocations.diffuseColor, object.material.diffuseColor);
+        gl.uniform3fv(object.programInfo.uniformLocations.specularColor, object.material.specularColor);
+        gl.uniform1f(object.programInfo.uniformLocations.shininess, object.material.shininess);
+        // ===============================================
+        // Update other uniforms 
+        gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
+        // gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
+      }
+      { // Draw 
+        // Bind the buffer we want to draw
+        gl.bindVertexArray(object.buffers.vao);
+        // Draw the object
+        const offset = 0; // Number of elements to skip before starting
+        // gl.drawElements(gl.LINE_LOOP, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+        gl.drawElements(gl.TRIANGLES, object.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      }
+    });
+  }
 }
 
 /**

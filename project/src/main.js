@@ -31,9 +31,18 @@ function game() {
   // ================ LOAD SHAPE FILES ====================
   state = initState(gl, canvas);
   scene.forEach(obj => { // FROM scene.js
-    console.log(obj.color);
-    spawnNewObject(gl,state, obj.type, obj.position, obj.scale, obj.color);
+    spawnNewObject(
+      gl = gl, 
+      objectList = state.objects.environment, 
+      position = obj.position, 
+      velocity = [0,0,0], 
+      color = obj.color, 
+      scale = obj.scale, 
+      mass = 1, 
+      type = obj.type
+    )
   });
+  // ============= SETUP KEY PRESS DETECTION ==============
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
   // ================ GAME LOOP ====================
@@ -94,7 +103,10 @@ function initState(gl, canvas) {
       height: 2,
       pivotDelay: .5 // 0 = instant movement, 1 = follow velocity
     },
-    objects: [],
+    objects: {
+      boids:[],
+      environment: []
+    },
     canvas: canvas,
     canvasWidth: 100,
     canvasHeight: 100,

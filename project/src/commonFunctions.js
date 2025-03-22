@@ -13,14 +13,38 @@ function randomInt(min, max) {
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(gl,state, type, position, scale = [1,1,1], color = [1,1,1,1]){
+function spawnNewObject(gl, objectList, position=[0,0,0], velocity=[0,0,0], color=[1,1,1,1], scale=[1,1,1], mass=1, type){
   // create new object
   type.material.diffuse = [color[0],color[1], color[2]];
+  var newShape = new Object(
+    gl,
+    position = position,
+    velocity = velocity,
+    color = color,
+    scale = scale,
+    mass = mass,
+    type = type,
+  )
+  // Add newShape to triangles
+  objectList.push(newShape);
+
+
+  // initBuffer(gl, object, positionArray, indicesArray) 
+  initBuffers( // FROM initBuffers.js
+    gl, 
+    objectList.at(-1), 
+    type.vertices.flat(),
+    type.triangles.flat(),
+    type.normals.flat()
+  );
+  return newShape;
+  /*
+  // old
   var newShape = {
     name: type.name,
-    model: new Mover(
-      position, 
-      scale,
+    model: new Object(
+      position = position, 
+      scale = scale,
     ),
     // this will hold the shader info for each object
     programInfo: transformShader(gl), // FROM shadersAndUniforms.js
@@ -39,19 +63,8 @@ function spawnNewObject(gl,state, type, position, scale = [1,1,1], color = [1,1,
       shininess: 32.0,
     },
   }
+  */
 
-  // Add newShape to triangles
-  state.objects.push(newShape);
-
-  // initBuffer(gl, object, positionArray, indicesArray) 
-  initBuffers( // FROM initBuffers.js
-    gl, 
-    state.objects.at(-1), 
-    type.vertices.flat(),
-    type.triangles.flat(),
-    type.normals.flat()
-  );
-  return newShape;
 }
 /**
  * A custom error function. The tag with id `webglError` must be present
