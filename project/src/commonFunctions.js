@@ -13,7 +13,16 @@ function randomInt(min, max) {
  * @param  {object} gl: the global web gl object
  * @param  {state} state: All information about the game 
  */
-function spawnNewObject(gl, objectList, position=vec3.create(), velocity=vec3.create(), color=[1,1,1,1], scale=[1,1,1], mass=1, type){
+function spawnNewObject(
+    gl, 
+    objectList, 
+    position=vec3.create(), 
+    velocity=vec3.create(), 
+    color=[1,1,1,1], 
+    scale=[1,1,1], 
+    mass=1, 
+    type, 
+  ){
   // create new object
   var newShape = new Object(
     gl,
@@ -26,8 +35,6 @@ function spawnNewObject(gl, objectList, position=vec3.create(), velocity=vec3.cr
   )
   // Add newShape to triangles
   objectList.push(newShape);
-
-
   // initBuffer(gl, object, positionArray, indicesArray) 
   initBuffers( // FROM initBuffers.js
     gl, 
@@ -37,33 +44,43 @@ function spawnNewObject(gl, objectList, position=vec3.create(), velocity=vec3.cr
     type.normals.flat()
   );
   return newShape;
-  /*
-  // old
-  var newShape = {
-    name: type.name,
-    model: new Object(
-      position = position, 
-      scale = scale,
-    ),
-    // this will hold the shader info for each object
-    programInfo: transformShader(gl), // FROM shadersAndUniforms.js
-    buffers: undefined,
-    centroid: calculateCentroid(type.vertices), // FROM drawScene
-    color: new Float32Array([
-      type.material.diffuse[0],
-      type.material.diffuse[1],
-      type.material.diffuse[2],
-      color[3],
-    ]),
-    material: {
-      ambientColor: [0.6, 0.6, 0.6],
-      diffuseColor: type.material.diffuse,
-      specularColor: [1.0, 1.0, 1.0],
-      shininess: 32.0,
-    },
-  }
-  */
-
+}
+/**
+ * Used to add new boid to the scene
+ */
+function spawnNewBoid(
+    gl, 
+    objectList, 
+    position=vec3.create(), 
+    velocity=vec3.create(), 
+    color=[1,1,1,1], 
+    scale=[1,1,1], 
+    mass=1, 
+    type, 
+    radius = 1
+  ){
+  // create new object
+  var newShape = new Boid(
+    gl,
+    position = position,
+    velocity = velocity,
+    color = color,
+    scale = scale,
+    mass = mass,
+    type = type,
+    radius = radius
+  )
+  // Add newShape to triangles
+  objectList.push(newShape);
+  // initBuffer(gl, object, positionArray, indicesArray) 
+  initBuffers( // FROM initBuffers.js
+    gl, 
+    objectList.at(-1), 
+    type.vertices.flat(),
+    type.triangles.flat(),
+    type.normals.flat()
+  );
+  return newShape;
 }
 /**
  * A custom error function. The tag with id `webglError` must be present

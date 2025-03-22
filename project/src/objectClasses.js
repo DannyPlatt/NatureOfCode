@@ -87,15 +87,16 @@ class Object {
 class Boid extends Object {
   constructor( 
     gl,
-    position = [0,0,0], 
-    velocity = [0,0,0], 
+    position = vec3.create(), 
+    velocity = vec3.create(), 
     color=[1,1,1,1], 
     scale = [1,1,1], 
     mass = 1,
-    type
+    type,
+    radius = 1,
   ) {
-    super(position, velocity, color, scale, mass);
-    this.radius = 2.0;
+    super(gl, position, velocity, color, scale, mass, type);
+    this.radius = radius;
     this.maxSpeed = 50;
     this.maxForce = 150;
     this.wanderTheta = 0;

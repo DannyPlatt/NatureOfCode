@@ -1,21 +1,22 @@
 let flock;
-let LOOPCOUNT = 100;
+let LOOPCOUNT;
 
 function setup(state, gl) {
-  let flockCount = 0;
+  let flockCount = 500;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
   for (let i = 0; i < flockCount; i++) {
-    let boid = spawnNewObject(
+    let boid = spawnNewBoid(
       gl = gl, 
       objectList = state.objects.boids, 
       // position = vec3.scale(vec3.create(), vec3.random(vec3.create()), 5), 
       position = vec3.random(vec3.create(), 5),
       velocity = vec3.random(vec3.create(), 20),
       color = [Math.random(),Math.random(), Math.random(), 1], 
-      scale = [2,2,2], 
+      scale = [1,1,1], 
       mass = 1, 
-      type = sphere,
+      type = cube,
+      radius = 2,
     );
     flock.addBoid(boid);
   }
