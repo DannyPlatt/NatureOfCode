@@ -8,6 +8,16 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 
+function constrain(num, min, max) {
+  if (num < min){
+    return min;
+  } else if (num > max) {
+    return max;
+  } else {
+    return num;
+  }
+}
+
 /**
  * Used to add new objects to the scene
  * @param  {object} gl: the global web gl object

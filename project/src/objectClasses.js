@@ -1,6 +1,86 @@
 // The nature of Code
 // Daniel Platt
 // Vehicle Class:
+class Binn {
+  constructor(gridRes, width, height, depth){
+    this.gridRes = gridRes
+    this.cols = Math.floor(width/this.gridRes);
+    this.rows = Math.floor(height/this.gridRes);
+    this.depth = Math.floor(depth/this.gridRes);
+    this.grid = new Array(this.cols);
+    for (let i = 0; i < this.grid.length; i++) {
+      this.grid[i] = new Array(this.rows);
+      for (let j = 0; j < this.grid[i].length; j++) {
+        this.grid[i][j] = new Array(this.depth);
+        for (let k = 0; k < this.grid[i][j].length; k++) {
+          this.grid[i][j][k] = [];
+          LOOPCOUNT++;
+        }
+      }
+    }
+  }
+
+  /*
+   * Find the neighbors in the surrounding 9 grid
+   * @Param boid the current boid object to locate
+   * @returns neighbors list of boids
+   * note: if current grid is on the edge, it skips to next square using continue
+   */
+  getNeighbors(boid, state) {
+    let boidColumn = Math.floor((boid.position[0]+state.canvasWidth /2) / this.gridRes);
+    let boidRow = Math.floor((boid.position[1] + state.canvasWidth / 2) / this.gridRes);
+    let boidDepth = Math.floor((boid.position[2]+ state.canvasDepth / 2) / this.gridRes);
+    boidColumn = constrain(boidColumn, 0, this.cols - 1);
+    boidRow = constrain(boidRow , 0, this.rows - 1);
+    boidDepth = constrain(boidDepth , 0, this.depth- 1);
+    let neighbors = [];
+    for (let i = -1; i < 2; i++) {
+      boidColumn += i;
+      if (boidColumn == -1){continue}
+      if (boidColumn > this.cols.length - 1){continue}
+      for (let j = -1; j < 2; j++) {
+        boidRow += j;
+        if (boidRow == -1){continue}
+        if (boidRow > this.rows.length - 1){continue}
+        for (let k = -1; k < 2; k++) {
+          boidDepth += k;
+          if (boidDepth == -1){continue}
+          if (boidDepth > this.depth.length - 1){continue}
+          neighbors.push(this.grid[boidColumn][boidRow][boidDepth]);
+          LOOPCOUNT++
+        }
+      }
+    }
+    return neighbors.flat();
+  }
+
+  repopulate(flock) {
+    // Each frame, the grid is reset to empty arrays.
+    for (let i = 0; i < this.cols; i++) {
+      for (let j = 0; j < this.rows; j++) {
+        for (let k = 0; k < this.depth; k++) {
+          this.grid[i][j][k] = [];
+          LOOPCOUNT++;
+        }
+      }
+    }
+    // Place each boid into the appropriate cell in the grid.
+    for (let boid of flock.boids) {
+      // Find the right column and row.
+      let column = Math.floor((boid.position[0]+state.canvasWidth /2) / this.gridRes);
+      let row = Math.floor((boid.position[1] + state.canvasWidth / 2) / this.gridRes);
+      let depth = Math.floor((boid.position[2]+ state.canvasDepth / 2) / this.gridRes);
+      // Constrain to the limits of the array.
+      column = constrain(column, 0, this.cols - 1);
+      row = constrain(row, 0, this.rows - 1);
+      depth = constrain(depth, 0, this.depth - 1)
+      // Add the boid.
+      this.grid[column][row][depth].push(boid);
+      LOOPCOUNT++;
+    }
+  }
+}
+
 class Object {
   constructor( 
     gl,
@@ -173,7 +253,7 @@ class Boid extends Object {
     return steer
   }
 
-  newFlock(boids, startingPoint) {
+  newFlock(neighbors, startingPoint) {
     let sepDist = this.scale[0];
     let aliDist = 10;
     let cohereDist = 10;
@@ -181,9 +261,10 @@ class Boid extends Object {
     let steer = vec3.create();
     let diff = vec3.create();
     let neg = vec3.create();
-    for(let i = startingPoint;i < boids.length; i++) {
+    for(let i = 0; i < neighbors.length; i++) {
       LOOPCOUNT++;
-      let other = boids[i];
+
+      let other = neighbors[i];
       if (this === other) {continue;} // skip loop if comparing itself
       // Find separation distance
       let distanceMagSq = vec3.sqrDist(this.position, other.position);
@@ -193,23 +274,24 @@ class Boid extends Object {
         vec3.normalize(diff, diff);
         if (distanceMagSq === 0){distanceMagSq = 0.00001;}
         vec3.scale(diff, diff, 1/Math.sqrt(distanceMagSq));
-        vec3.add(other.separationForce, other.separationForce, vec3.negate(neg,diff));
+        // vec3.add(other.separationForce, other.separationForce, vec3.negate(neg,diff));
         vec3.add(this.separationForce, this.separationForce, diff);
       }       
       // ALIGN
       if (distanceMagSq < aliDist*aliDist) {
-        vec3.add(other.alignForce, other.alignForce, this.velocity);
+        // vec3.add(other.alignForce, other.alignForce, this.velocity);
         vec3.add(this.alignForce, this.alignForce, other.velocity);
       }
       // COHERE
       if (distanceMagSq < cohereDist*cohereDist) {
         this.collision = true;
         other.collision = true;
-        vec3.add(other.cohereForce, other.cohereForce, this.position); // apply to other boid
+        // vec3.add(other.cohereForce, other.cohereForce, this.position); // apply to other boid
         vec3.add(this.cohereForce, this.cohereForce, other.position); // apply to this boid
-        other.cohereCount++;
+        // other.cohereCount++;
         this.cohereCount++;
       }
+      /*
       if (other === boids[boids.length - 1] && distanceMagSq < preditorDist * preditorDist) {
         // vec3.sub(diff,this.position, other.position);
         diff = this.seek(other.position);
@@ -222,6 +304,7 @@ class Boid extends Object {
         }
         continue;
       }
+      */
     }
     if (this.collision) {
     } else {
@@ -390,9 +473,10 @@ class Flock {
   constructor() {
     this.boids = [];
   }
-  run(state) {
+  run(state, bin) {
     for (let i = 0; i < this.boids.length; i++) {
-      this.boids[i].run(this.boids, i, state);
+      let neighbors = bin.getNeighbors(this.boids[i], state); 
+      this.boids[i].run(neighbors, i, state);
     }
   }
   addBoid(boid) {

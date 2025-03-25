@@ -1,10 +1,12 @@
 let flock;
 let LOOPCOUNT;
+let bin;
 
 function setup(state, gl) {
-  let flockCount = 500;
+  let flockCount = 1000;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
+  bin = new Binn(2, state.canvasWidth, state.canvasHeight, state.canvasDepth);
   for (let i = 0; i < flockCount; i++) {
     let boid = spawnNewBoid(
       gl = gl, 
@@ -26,9 +28,12 @@ function setup(state, gl) {
   flock.boids[flock.boids.length-1].scale = [3,3,3]; 
 }
 
+
+
 function draw(state, gl) {
   // add gravity to all objects
-  flock.run(state);
+  bin.repopulate(flock); 
+  flock.run(state, bin);
   flock.boids.forEach(object => {
     object.edges(state);
     object.update(state);
@@ -46,15 +51,4 @@ function draw(state, gl) {
   LOOPCOUNT = 0;
 }
 
-function initBalls(gl,state, count) {
-  let ballCount = count;
-  let type = sphere;
-  let w = state.canvasWidth/4;
-  let scaleSize = 1
-  for (let i = 0; i < ballCount; i++) {
-    let position = [randomInt(-w, w), randomInt(1, w), randomInt(-w, w)];
-    let scale = [scaleSize, scaleSize, scaleSize];
-    let color = [Math.random(),Math.random(),Math.random()]
-    ball.velocity = vec3.fromValues(randomFl(-100, 100), randomFl(-100, 100), randomFl(-50, 50))
-  }
-}
+
