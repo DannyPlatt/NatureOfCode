@@ -2,7 +2,7 @@ let flock;
 let LOOPCOUNT;
 
 function setup(state, gl) {
-  let flockCount = 1000;
+  let flockCount = 2500;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
   for (let i = 0; i < flockCount; i++) {
@@ -11,12 +11,13 @@ function setup(state, gl) {
       objectList = state.objects.boids, 
       // position = vec3.random(vec3.create(), 5),
       position = vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
+      //velocity = vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
       velocity = vec3.fromValues(randomFl(-20,20),randomFl(-20, 20), randomFl(-20, 20)),
       // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
       color = [0.2,0.2,0.2],
       scale = [2,2,2], 
       mass = 1, 
-      type = cube,
+      type = sphere,
       radius = 2,
     );
     flock.addBoid(boid);
@@ -30,6 +31,11 @@ function draw(state, gl) {
     object.edges(state);
     object.update(state);
     LOOPCOUNT++;
+	
+    //object.material.diffuseColor = [object.velocity[0], object.velocity[1], object.velocity[2]];
+	let tempColor = vec3.length(object.velocity)/object.maxSpeed;
+	  object.material.diffuseColor = [tempColor,0,0];
+	  object.applyForce(vec3.fromValues(0,0,-10));
   });
   drawScene(state, gl); // FROM drawScene.js
   // console.log("LOOPCOUNT: ", LOOPCOUNT)

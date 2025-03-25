@@ -74,15 +74,15 @@ class Object {
     // X
     var steer = 0;
     if (this.position[0] < -state.canvasWidth/2 || this.position[0] > state.canvasWidth/2) { 
-      steer = this.seek(vec3.fromValues(0,0,0));
+      steer = this.seek(vec3.fromValues(0,this.position[1],this.position[2]));
     }
     // Y
     else if (this.position[1] < -state.canvasHeight/2 || this.position[1]>state.canvasHeight/2){
-      steer = this.seek(vec3.fromValues(0,0,0));
+      steer = this.seek(vec3.fromValues(this.position[0], 0,this.position[2]));
     }
     // Z
     else if (this.position[2] < -state.canvasHeight/2 || this.position[2]>state.canvasHeight/2){
-      steer = this.seek(vec3.fromValues(0,0,0));
+      steer = this.seek(vec3.fromValues(this.position[0],this.position[1],0));
     }
     if (steer != 0){
       this.applyForce(steer);
@@ -145,8 +145,8 @@ class Boid extends Object {
 
   newFlock(boids, startingPoint) {
     let sepDist = this.scale[0] + 2;
-    let aliDist = 5;
-    let cohereDist = 5;
+    let aliDist = 3;
+    let cohereDist = 3;
     let steer = vec3.create();
     for(let i = startingPoint;i < boids.length; i++) {
       LOOPCOUNT++;
