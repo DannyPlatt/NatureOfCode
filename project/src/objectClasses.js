@@ -145,8 +145,8 @@ class Boid extends Object {
   ) {
     super(gl, position, velocity, color, scale, mass, type);
     this.radius = radius;
-    this.maxSpeed = 30;
-    this.maxForce = 50;
+    this.maxSpeed = 50;
+    this.maxForce = 80;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
@@ -177,6 +177,7 @@ class Boid extends Object {
     let sepDist = this.scale[0];
     let aliDist = 10;
     let cohereDist = 10;
+    let preditorDist = 9.5;
     let steer = vec3.create();
     let diff = vec3.create();
     let neg = vec3.create();
@@ -208,6 +209,18 @@ class Boid extends Object {
         vec3.add(this.cohereForce, this.cohereForce, other.position); // apply to this boid
         other.cohereCount++;
         this.cohereCount++;
+      }
+      if (other === boids[boids.length - 1] && distanceMagSq < preditorDist * preditorDist) {
+        // vec3.sub(diff,this.position, other.position);
+        diff = this.seek(other.position);
+        vec3.scale(diff, diff, -3);
+        this.applyForce(diff);
+        if(distanceMagSq < this.scale[0] * this.scale[0]){
+          // boids.splice(i, 1);
+          // this.material.diffuseColor = [1,1,1];
+
+        }
+        continue;
       }
     }
     if (this.collision) {
