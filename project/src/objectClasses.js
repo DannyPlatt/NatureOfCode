@@ -70,6 +70,36 @@ class Object {
     else if (this.position[2] > state.canvasDepth/2) { this.position[2] = -state.canvasDepth/2; }
   }
   */
+  hardEdges(state) {
+    // X
+    const reduction = -0.9
+    if (this.position[0] < -state.canvasWidth/2) { 
+      this.velocity[0] = this.velocity[0] * reduction;
+      this.position[0] = -state.canvasWidth/2; 
+    }
+    else if (this.position[0] > state.canvasWidth/2) { 
+      this.velocity[0] = this.velocity[0] * reduction;
+      this.position[0] = state.canvasWidth/2; 
+    }
+    // Y
+    else if (this.position[1] < -state.canvasHeight/2) {
+      this.velocity[1] = this.velocity[1] * reduction;
+      this.position[1] = -state.canvasHeight/2; 
+    }
+    else if (this.position[1] > state.canvasHeight/2) {
+      this.velocity[1] = this.velocity[1] * reduction;
+      this.position[1] = state.canvasHeight/2; 
+    }
+    // Z
+    else if (this.position[2] < -state.canvasDepth/2) {
+      this.velocity[2] = this.velocity[2] * reduction;
+      this.position[2] = -state.canvasDepth/2; 
+    }
+    else if (this.position[2] > state.canvasDepth/2) {
+      this.velocity[2] = this.velocity[2] * reduction;
+      this.position[2] = state.canvasDepth/2; 
+    }
+  }
   edges(state) {
     // X
     var steer = 0;
@@ -144,10 +174,12 @@ class Boid extends Object {
   }
 
   newFlock(boids, startingPoint) {
-    let sepDist = this.scale[0] + 2;
-    let aliDist = 3;
-    let cohereDist = 3;
+    let sepDist = this.scale[0];
+    let aliDist = 10;
+    let cohereDist = 10;
     let steer = vec3.create();
+    let diff = vec3.create();
+    let neg = vec3.create();
     for(let i = startingPoint;i < boids.length; i++) {
       LOOPCOUNT++;
       let other = boids[i];
@@ -156,11 +188,11 @@ class Boid extends Object {
       let distanceMagSq = vec3.sqrDist(this.position, other.position);
       // SEPARATION
       if (distanceMagSq <= sepDist*sepDist) {
-        let diff = vec3.sub(vec3.create(),this.position, other.position);
+        vec3.sub(diff,this.position, other.position);
         vec3.normalize(diff, diff);
         if (distanceMagSq === 0){distanceMagSq = 0.00001;}
         vec3.scale(diff, diff, 1/Math.sqrt(distanceMagSq));
-        vec3.add(other.separationForce, other.separationForce, vec3.negate(vec3.create(),diff));
+        vec3.add(other.separationForce, other.separationForce, vec3.negate(neg,diff));
         vec3.add(this.separationForce, this.separationForce, diff);
       }       
       // ALIGN
