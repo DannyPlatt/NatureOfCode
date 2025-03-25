@@ -34,22 +34,23 @@ function drawScene(state, gl) {
     focalPoint,
     state.camera.up,
   );
+        var modelMatrix = mat4.create();
+        // assign perspective and view matricies
   for (let objListName in state.objects){
     state.objects[objListName].forEach((object) =>{
       // Choose to use our shader
       gl.useProgram(object.programInfo.program);
+        gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
+        gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
 
       // Update uniforms with state variables values
       {
-        // assign perspective and view matricies
-        gl.uniformMatrix4fv(object.programInfo.uniformLocations.projection, false, projectionMatrix);
-        gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);
 
         // Update model transform
         // ===============================================
         // It is odd that the transformations are applied in reverse order
         // Objects are translated up so that y scaling is completely in the positive direction. We do not need y scaling below the table
-        var modelMatrix = mat4.create();
+	      modelMatrix = mat4.identity(modelMatrix);
         mat4.translate(modelMatrix, modelMatrix, object.position);
         mat4.translate(modelMatrix, modelMatrix, object.centroid);
         // mat4.mul( modelMatrix, modelMatrix, object.model.rotation.mat);
