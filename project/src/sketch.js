@@ -2,18 +2,19 @@ let flock;
 let LOOPCOUNT;
 
 function setup(state, gl) {
-  let flockCount = 3;
+  let flockCount = 1000;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
   for (let i = 0; i < flockCount; i++) {
     let boid = spawnNewBoid(
       gl = gl, 
       objectList = state.objects.boids, 
-      // position = vec3.scale(vec3.create(), vec3.random(vec3.create()), 5), 
-      position = vec3.random(vec3.create(), 5),
-      velocity = vec3.fromValues(0,0,20),
-      color = [Math.random(),Math.random(), Math.random(), 1], 
-      scale = [5,5,5], 
+      // position = vec3.random(vec3.create(), 5),
+      position = vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
+      velocity = vec3.fromValues(randomFl(-20,20),randomFl(-20, 20), randomFl(-20, 20)),
+      // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
+      color = [0.2,0.2,0.2],
+      scale = [2,2,2], 
       mass = 1, 
       type = cube,
       radius = 2,
@@ -24,7 +25,7 @@ function setup(state, gl) {
 
 function draw(state, gl) {
   // add gravity to all objects
-  // flock.run();
+  flock.run(state);
   flock.boids.forEach(object => {
     object.edges(state);
     object.update(state);

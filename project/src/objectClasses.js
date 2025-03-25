@@ -17,6 +17,7 @@ class Object {
     this.scale = vec3.fromValues(scale[0], scale[1], scale[2]);
     this.mass = mass;
     this.timer = 0;
+    this.color = color;
     // WebGL info
     this.name = type.name;
     this.programInfo = transformShader(gl) // FROM shadersAndUniforms.js
@@ -46,7 +47,6 @@ class Object {
    * @param state Uses state.dt to manage the delta time of the movements
    */
   update(state) {
-    // console.log("state", state);
     vec3.scale(this.accel, this.accel, state.dt);
     vec3.add(this.velocity, this.velocity, this.accel);
     let scaledVel = vec3.create();
@@ -58,7 +58,6 @@ class Object {
   /*
    * If object moves outside of bounding box, move the object to the other side of the box
    * @param state Uses state.dt to manage the delta time of the movements
-   */
   edges(state) {
     // X
     if (this.position[0] < -state.canvasWidth/2) { this.position[0] = state.canvasWidth/2; }
@@ -69,6 +68,25 @@ class Object {
     // Z
     else if (this.position[2] < -state.canvasDepth/2) { this.position[2] = state.canvasDepth/2; }
     else if (this.position[2] > state.canvasDepth/2) { this.position[2] = -state.canvasDepth/2; }
+  }
+  */
+  edges(state) {
+    // X
+    var steer = 0;
+    if (this.position[0] < -state.canvasWidth/2 || this.position[0] > state.canvasWidth/2) { 
+      steer = this.seek(vec3.fromValues(0,0,0));
+    }
+    // Y
+    else if (this.position[1] < -state.canvasHeight/2 || this.position[1]>state.canvasHeight/2){
+      steer = this.seek(vec3.fromValues(0,0,0));
+    }
+    // Z
+    else if (this.position[2] < -state.canvasHeight/2 || this.position[2]>state.canvasHeight/2){
+      steer = this.seek(vec3.fromValues(0,0,0));
+    }
+    if (steer != 0){
+      this.applyForce(steer);
+    }
   }
 
   /**
@@ -97,19 +115,20 @@ class Boid extends Object {
   ) {
     super(gl, position, velocity, color, scale, mass, type);
     this.radius = radius;
-    this.maxSpeed = 50;
-    this.maxForce = 150;
+    this.maxSpeed = 30;
+    this.maxForce = 50;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
     this.cohereForce = vec3.create();
     this.cohereCount = 0;
+    this.collision = false;
   }
 
-  run(boids, startPoint) {
+  run(boids, startPoint, state) {
     // this.flock(boids);
     this.newFlock(boids, startPoint);
-    this.update();
+    this.update(state);
     // this.edges();
     // this.show();
   }
@@ -125,41 +144,45 @@ class Boid extends Object {
   }
 
   newFlock(boids, startingPoint) {
-    let sepDist = 2;
-    let aliDist = 4;
-    let cohereDist = 4;
+    let sepDist = this.scale[0] + 2;
+    let aliDist = 5;
+    let cohereDist = 5;
     let steer = vec3.create();
     for(let i = startingPoint;i < boids.length; i++) {
-      // console.log("i: ", i);
-      // console.log("LOOPCOUNT: ", LOOPCOUNT);
       LOOPCOUNT++;
       let other = boids[i];
       if (this === other) {continue;} // skip loop if comparing itself
       // Find separation distance
-      let distanceMag = vec3.sqrDist(this.position, other.position);
+      let distanceMagSq = vec3.sqrDist(this.position, other.position);
       // SEPARATION
-      if (distanceMag <= sepDist) {
+      if (distanceMagSq <= sepDist*sepDist) {
         let diff = vec3.sub(vec3.create(),this.position, other.position);
         vec3.normalize(diff, diff);
-        if (distanceMag === 0){distanceMag = 0.001;}
-        vec3.scale(diff, diff, 1/distanceMag);
+        if (distanceMagSq === 0){distanceMagSq = 0.00001;}
+        vec3.scale(diff, diff, 1/Math.sqrt(distanceMagSq));
         vec3.add(other.separationForce, other.separationForce, vec3.negate(vec3.create(),diff));
         vec3.add(this.separationForce, this.separationForce, diff);
-      }
+      }       
       // ALIGN
-      if (distanceMag < aliDist) {
+      if (distanceMagSq < aliDist*aliDist) {
         vec3.add(other.alignForce, other.alignForce, this.velocity);
         vec3.add(this.alignForce, this.alignForce, other.velocity);
       }
       // COHERE
-      if (distanceMag < cohereDist) {
-        
+      if (distanceMagSq < cohereDist*cohereDist) {
+        this.collision = true;
+        other.collision = true;
         vec3.add(other.cohereForce, other.cohereForce, this.position); // apply to other boid
         vec3.add(this.cohereForce, this.cohereForce, other.position); // apply to this boid
         other.cohereCount++;
         this.cohereCount++;
       }
     }
+    if (this.collision) {
+    } else {
+    }
+    this.collision = false;
+    
     // apply separation force
     if(vec3.sqrLen(this.separationForce) != 0){
       vec3.normalize(this.separationForce, this.separationForce);
@@ -174,9 +197,12 @@ class Boid extends Object {
       vec3.sub(this.alignForce ,this.alignForce, this.velocity);
       limit(this.alignForce, this.maxForce)
     }
-    if (vec3.sqrLen(this.cohereForce) != 0 ){
+    if (this.cohereCount > 0 ){
       vec3.scale(this.cohereForce, this.cohereForce, 1/this.cohereCount);
       this.cohereForce = this.seek(this.cohereForce);
+      this.cohereCount = 0;
+    } else {
+      vec3.set(this.cohereForce, 0, 0, 0);
     }
     // apply coeffecients
     let sepCoef = document.getElementById('slider0');
@@ -186,11 +212,11 @@ class Boid extends Object {
     vec3.scale(this.alignForce, this.alignForce,aliCoef.value);
     vec3.scale(this.cohereForce, this.cohereForce,coCoef.value);
     this.applyForce(this.separationForce);
-    vec3.scale(this.separationForce,this.separationForce, 0);
+    vec3.set(this.separationForce,0, 0, 0);
     this.applyForce(this.alignForce);
-    vec3.scale(this.alignForce, this.alignForce, 0);
+    vec3.set(this.alignForce,0, 0, 0);
     this.applyForce(this.cohereForce);
-    vec3.scale(this.cohereForce, this.cohereForce, 0);
+    vec3.set(this.cohereForce,0, 0, 0);
   }
 
   separate(boids) {
@@ -319,9 +345,9 @@ class Flock {
   constructor() {
     this.boids = [];
   }
-  run() {
+  run(state) {
     for (let i = 0; i < this.boids.length; i++) {
-      this.boids[i].run(this.boids, i);
+      this.boids[i].run(this.boids, i, state);
     }
   }
   addBoid(boid) {

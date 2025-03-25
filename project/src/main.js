@@ -92,9 +92,9 @@ function initState(gl, canvas) {
       environment: []
     },
     canvas: canvas,
-    canvasWidth: 100,
-    canvasHeight: 100,
-    canvasDepth: 100,
+    canvasWidth: 50,
+    canvasHeight: 50,
+    canvasDepth: 50,
     selectedIndex: 0,
     hasSelected: false,
     light: [
