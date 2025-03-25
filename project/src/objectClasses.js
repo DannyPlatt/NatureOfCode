@@ -35,18 +35,18 @@ class Binn {
     boidDepth = constrain(boidDepth , 0, this.depth- 1);
     let neighbors = [];
     for (let i = -1; i < 2; i++) {
-      boidColumn += i;
-      if (boidColumn == -1){continue}
-      if (boidColumn > this.cols.length - 1){continue}
+      let tempColumn = boidColumn+i;
+      if (tempColumn === -1){continue}
+      if (tempColumn > this.cols - 1){continue}
       for (let j = -1; j < 2; j++) {
-        boidRow += j;
-        if (boidRow == -1){continue}
-        if (boidRow > this.rows.length - 1){continue}
+        let tempRow = boidRow+j;
+        if (tempRow === -1){continue}
+        if (tempRow > this.rows - 1){continue}
         for (let k = -1; k < 2; k++) {
-          boidDepth += k;
-          if (boidDepth == -1){continue}
-          if (boidDepth > this.depth.length - 1){continue}
-          neighbors.push(this.grid[boidColumn][boidRow][boidDepth]);
+          let tempDepth = boidDepth+k;
+          if (tempDepth === -1){continue}
+          if (tempDepth > this.depth - 1){continue}
+          neighbors.push(this.grid[tempColumn][tempRow][tempDepth]);
           LOOPCOUNT++
         }
       }
