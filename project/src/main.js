@@ -92,9 +92,9 @@ function initState(gl, canvas) {
       environment: []
     },
     canvas: canvas,
-    canvasWidth: 30,
-    canvasHeight: 30,
-    canvasDepth: 30,
+    canvasWidth: 150,
+    canvasHeight: 150,
+    canvasDepth: 150,
     selectedIndex: 0,
     hasSelected: false,
     light: [
@@ -114,7 +114,7 @@ function handleTime(state, then, fpsElem) {
     if (then === 0) {
       return now;
     }
-    state.dt = (now - then);
+    state.dt = (now - then) * 0.6;
     if (state.dt > 0.5) {
       state.dt = .1
     }

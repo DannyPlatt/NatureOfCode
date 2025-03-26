@@ -1,12 +1,13 @@
 let flock;
 let LOOPCOUNT;
+let BINCOUNT = 0;
 let bin;
 
 function setup(state, gl) {
-  let flockCount = 1000;
+  let flockCount = 100;
   // initBalls(gl,state, flockCount);
   flock = new Flock();
-  bin = new Binn(2, state.canvasWidth, state.canvasHeight, state.canvasDepth);
+  bin = new Binn(10, state.canvasWidth, state.canvasHeight, state.canvasDepth);
   for (let i = 0; i < flockCount; i++) {
     let boid = spawnNewBoid(
       gl = gl, 
@@ -31,6 +32,8 @@ function setup(state, gl) {
 
 
 function draw(state, gl) {
+  LOOPCOUNT = 0;
+  BINCOUNT= 0;
   // add gravity to all objects
   bin.repopulate(flock); 
   flock.run(state, bin);
@@ -48,7 +51,6 @@ function draw(state, gl) {
 
   drawScene(state, gl); // FROM drawScene.js
   // console.log("LOOPCOUNT: ", LOOPCOUNT)
-  LOOPCOUNT = 0;
 }
 
 

@@ -14,7 +14,6 @@ class Binn {
         this.grid[i][j] = new Array(this.depth);
         for (let k = 0; k < this.grid[i][j].length; k++) {
           this.grid[i][j][k] = [];
-          LOOPCOUNT++;
         }
       }
     }
@@ -47,7 +46,7 @@ class Binn {
           if (tempDepth === -1){continue}
           if (tempDepth > this.depth - 1){continue}
           neighbors.push(this.grid[tempColumn][tempRow][tempDepth]);
-          LOOPCOUNT++
+          BINCOUNT++;
         }
       }
     }
@@ -60,7 +59,7 @@ class Binn {
       for (let j = 0; j < this.rows; j++) {
         for (let k = 0; k < this.depth; k++) {
           this.grid[i][j][k] = [];
-          LOOPCOUNT++;
+          BINCOUNT++;
         }
       }
     }
@@ -76,7 +75,7 @@ class Binn {
       depth = constrain(depth, 0, this.depth - 1)
       // Add the boid.
       this.grid[column][row][depth].push(boid);
-      LOOPCOUNT++;
+      BINCOUNT++;
     }
   }
 }
