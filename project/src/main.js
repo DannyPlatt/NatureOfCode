@@ -92,14 +92,14 @@ function initState(gl, canvas) {
       environment: []
     },
     canvas: canvas,
-    canvasWidth: 80,
-    canvasHeight: 80,
-    canvasDepth: 80,
+    canvasWidth: 100,
+    canvasHeight: 100,
+    canvasDepth: 100,
     selectedIndex: 0,
     hasSelected: false,
     light: [
       { // overhead light
-        position: vec3.fromValues(-100, 50, -20), // position of the light source (we can adjust however we want)
+        position: vec3.fromValues(0, 0, 0), // position of the light source (we can adjust however we want)
         lookat: vec3.create(),
       },
     ]
@@ -114,7 +114,7 @@ function handleTime(state, then, fpsElem) {
     if (then === 0) {
       return now;
     }
-    state.dt = (now - then); 
+    state.dt = (now - then) * 0.1; 
     if (state.dt > 0.5) {
       state.dt = .1
     }

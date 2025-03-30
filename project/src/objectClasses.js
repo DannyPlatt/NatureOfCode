@@ -223,8 +223,8 @@ class Boid extends Object {
     type,
   ) {
     super(gl, position, velocity, color, scale, mass, type);
-    this.maxSpeed = 50;
-    this.maxForce = 80;
+    this.maxSpeed = 100;
+    this.maxForce = 160;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
@@ -474,10 +474,10 @@ class Flock {
     this.buffers = undefined;
     this.boids = [];
     this.material =  {
-      ambientColor: [0.6, 0.6, 0.6],
+      ambientColor: [1.0, 0.4, 1.0],
       diffuseColor: [color[0], color[1], color[2]],
       specularColor: [1.0, 1.0, 1.0],
-      shininess: 32.0,
+      shininess: 10.0,
     };
   }
   run(state, bin) {
@@ -495,8 +495,8 @@ class Flock {
         state.objects.boids, 
         // position = vec3.random(vec3.create(), 5),
         vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
-        vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
-        // velocity = vec3.fromValues(randomFl(-20,20),randomFl(-20, 20), randomFl(-20, 20)),
+        // vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
+        vec3.fromValues(randomFl(-40,40),randomFl(-40, 40), randomFl(-40, 40)),
         // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
         color,
         scale,

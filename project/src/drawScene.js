@@ -5,7 +5,7 @@
  * @param {object} state: information about scene
  */
 function drawScene(state, gl, flock) {
-  gl.clearColor(0.9, 0.9, 0.9, 1.0); // Set background
+  gl.clearColor(0.1, 0.01, 0.05, 1.0); // Set background
 // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
   gl.depthFunc(gl.LEQUAL); // Near things obscure far things
@@ -62,7 +62,7 @@ function drawScene(state, gl, flock) {
         -object.centroid[2],
       ]);
       positionTransformData.push(...object.modelMatrix);
-      colorTransformData.push(object.color);
+      colorTransformData.push(object.material.diffuse);
     }
     // console.log("MODELMATRIX: ", flock.boids[0].modelMatrix);
     // set attributes
