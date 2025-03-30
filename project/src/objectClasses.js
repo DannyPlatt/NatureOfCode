@@ -108,6 +108,7 @@ class Object {
       specularColor: [1.0, 1.0, 1.0],
       shininess: 32.0,
     };
+    this.modelMatrix = mat4.create();
   }
 
   /*
@@ -220,10 +221,8 @@ class Boid extends Object {
     scale = [1,1,1], 
     mass = 1,
     type,
-    radius = 1,
   ) {
     super(gl, position, velocity, color, scale, mass, type);
-    this.radius = radius;
     this.maxSpeed = 50;
     this.maxForce = 80;
     this.wanderTheta = 0;
@@ -469,8 +468,17 @@ class Boid extends Object {
 }
 
 class Flock {
-  constructor() {
+  constructor(gl, color=[1,0.3,0.3]) {
+    // WebGL info
+    this.programInfo = transformShader(gl) // FROM shadersAndUniforms.js
+    this.buffers = undefined;
     this.boids = [];
+    this.material =  {
+      ambientColor: [0.6, 0.6, 0.6],
+      diffuseColor: [color[0], color[1], color[2]],
+      specularColor: [1.0, 1.0, 1.0],
+      shininess: 32.0,
+    };
   }
   run(state, bin) {
     for (let i = 0; i < this.boids.length; i++) {
@@ -478,6 +486,27 @@ class Flock {
       this.boids[i].run(neighbors, i, state);
     }
   }
+
+  createFlock(flockCount, gl, state,  color=[0.2,0.2,0.2], scale=[1,1,1], type=sphere) {
+    console.log("OBJECTRS: ", state.objects.boids);
+    for (let i = 0; i < flockCount; i++) {
+      let boid = spawnNewBoid(
+        gl = gl, 
+        state.objects.boids, 
+        // position = vec3.random(vec3.create(), 5),
+        vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
+        vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
+        // velocity = vec3.fromValues(randomFl(-20,20),randomFl(-20, 20), randomFl(-20, 20)),
+        // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
+        color,
+        scale,
+        1, 
+        type,
+      );
+      flock.addBoid(boid);
+    }
+  }
+
   addBoid(boid) {
     this.boids.push(boid);
   }

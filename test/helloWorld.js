@@ -2,23 +2,24 @@
 const vertexShaderSource = `#version 300 es
 
 layout(location=0) in vec4 aPosition;
-layout(location=1) in vec3 aOffset;
-layout(location=2) in float scale;
-layout(location=3) in vec4 aColor;
+layout(location=1) in vec4 aColor;
+layout(location=2) in mat4 aModelMatrix;
 
 out vec4 vColor;
 
 void main()
 {
   vColor = aColor;
-  gl_Position = vec4(aPosition.xyz * scale + aOffset, 1.0);
+  gl_Position = aModelMatrix * aPosition;
 }`;
 
 const fragmentShaderSource = `#version 300 es
 precision mediump float;
 
 in vec4 vColor;
+
 out vec4 fragColor;
+
 void main()
 {
   fragColor = vColor;
@@ -61,77 +62,87 @@ gl.bufferData(gl.ARRAY_BUFFER, modelData, gl.STATIC_DRAW);
 gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(0);
 
-const transformData = new Float32Array([
-  //offset      scale   color
-    -.2, .7,    .1,     1,0,0,
-    .2, .1,     .2,     1,0,1,
-])
-
 // init transfromData
 const positionData = new Array();
 const colorData = new Array();
-const objCount = 26000
+const velData = new Array();
+const objCount = 1;
 
-for (let i = 0; i <= objCount; i++){
+for (let i = 0; i < objCount; i++){
+  let scale = 0.02;
+  let modelMatrix = mat4.create();
   let position = [(Math.random()-0.5) * 2, (Math.random()-.5)*2 , Math.random()-.5];
+  velData.push(vec3.random(vec3.create(), 0.1));
+  mat4.translate(modelMatrix,modelMatrix,vec3.fromValues(position[0], position[1], position[2]));
+  mat4.scale(modelMatrix, modelMatrix, vec3.fromValues(scale, scale, scale));
+  positionData.push([...modelMatrix]);
+
   let color = [Math.random(), Math.random(), Math.random()];
-  let scale = 0.01;
-  colorData.push(position);
-  colorData.push(scale);
   colorData.push(color);
 }
-console.log(colorData.flat());
 
 function render() {
 
-  for (let i = 0; i <= objCount; i++){
-    colorData[i*3][0] +=  (Math.random()) * 0.01;
-    colorData[i*3][1] +=  (Math.random()) * 0.01;
-    colorData[i*3][1] +=  (Math.random()) * 0.01;
-    if (colorData[i*3][0] < -1){
-      colorData[i*3][0] = 1
+  for (let i = 0; i < objCount; i++){
+    // mat4.rotateZ(positionData[i], positionData[i], Math.random()*0.05);
+    // mat4.translate(positionData[i], positionData[i], velData[i]);
+    let position = mat4.getTranslation(vec3.create(), positionData[i]);
+    mat4.translate(positionData[i], positionData[i], vec3.negate(vec3.create(),position))
+    console.log("1", i, position);
+    vec3.add(position, position, vec3.fromValues(0.1,0,0));
+    if (position[0] < -1){
+      position[0] = 1;
+    } 
+    if (position[0] > 1){
+      position[0] = -1;
+      console.log("HERE", position)
     }
-    if (colorData[i*3][0] > 1){
-      colorData[i*3][0] = -1
+    if (position[1] < -1){
+      position[1] = 1;
     }
-    if (colorData[i*3][1] < -1){
-      colorData[i*3][1] = 1
+    if (position[1] > 1){
+      position[1] = -1;
     }
-    if (colorData[i*3][1] > 1){
-      colorData[i*3][1] = -1
+    if (position[2] < -1){
+      position[2] = 1;
     }
-    if (colorData[i*3][2] < -1){
-      colorData[i*3][2] = 1
+    if (position[2] > 1){
+      position[2] = -1;
     }
-    if (colorData[i*3][2] > 1){
-      colorData[i*3][2] = -1
-    }
+    mat4.translate(positionData[i], positionData[i], position);
   }
 
   
-  // const transformBuffer = gl.createBuffer();
-  // gl.bindBuffer(gl.ARRAY_BUFFER, transformBuffer);
-  // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionData.flat()), gl.STATIC_DRAW);
-  // gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
+  const transformBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, transformBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionData.flat()), gl.STATIC_DRAW);
+  const matLoc = 2
+
+  gl.vertexAttribPointer(matLoc+0, 4, gl.FLOAT, false, 64, 0);
+  gl.vertexAttribPointer(matLoc+1, 4, gl.FLOAT, false, 64, 16);
+  gl.vertexAttribPointer(matLoc+2, 4, gl.FLOAT, false, 64, 32);
+  gl.vertexAttribPointer(matLoc+3, 4, gl.FLOAT, false, 64, 48);
+
+  gl.vertexAttribDivisor(matLoc + 0, 1);
+  gl.vertexAttribDivisor(matLoc + 1, 1);
+  gl.vertexAttribDivisor(matLoc + 2, 1);
+  gl.vertexAttribDivisor(matLoc + 3, 1);
+
+  gl.enableVertexAttribArray(matLoc + 0);
+  gl.enableVertexAttribArray(matLoc + 1);
+  gl.enableVertexAttribArray(matLoc + 2);
+  gl.enableVertexAttribArray(matLoc + 3);
 
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorData.flat()), gl.STATIC_DRAW);
-  gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 28, 0);
-  gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 28, 12);
-  gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 28, 16);
 
   // location, divisor(times to reuse transform values)
-  gl.vertexAttribDivisor(1, 1)
-  gl.vertexAttribDivisor(2, 1)
-  gl.vertexAttribDivisor(3, 1)
-
+  gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(1,1)
   gl.enableVertexAttribArray(1);
-  gl.enableVertexAttribArray(2);
-  gl.enableVertexAttribArray(3);
 
   gl.drawArraysInstanced(gl.TRIANGLES, 0, 3, objCount);
   requestAnimationFrame(render);
 }
 requestAnimationFrame(render);
-

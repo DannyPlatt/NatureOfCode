@@ -63,11 +63,10 @@ function spawnNewBoid(
     objectList, 
     position=vec3.create(), 
     velocity=vec3.create(), 
-    color=[1,1,1,1], 
+    color=[1,1,1], 
     scale=[1,1,1], 
     mass=1, 
     type, 
-    radius = 1
   ){
   // create new object
   var newShape = new Boid(
@@ -78,7 +77,6 @@ function spawnNewBoid(
     scale = scale,
     mass = mass,
     type = type,
-    radius = radius
   )
   // Add newShape to triangles
   objectList.push(newShape);

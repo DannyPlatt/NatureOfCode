@@ -4,25 +4,28 @@
 function transformShader(gl) {
   // Vertex shader source code
   const vsSource = `#version 300 es
-in vec3 aPosition;
-in vec3 aNormal; // Add normal attribute
+layout(location=0) in vec3 aPosition;
+layout(location=1) in vec3 aNormal; // Add normal attribute
+layout(location=2) in vec3 aDiffuseColor;
+layout(location=3) in mat4 aModelMatrix;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
-uniform mat4 uModelMatrix;
 
+out vec3 vDiffuseColor;
 out vec3 vNormal;   // Pass normal to fragment shader
 out vec3 vFragPos;  // Pass fragment position to fragment shader
 
 void main() {
-    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPosition, 1.0);
+    vDiffuseColor = aDiffuseColor;
+    gl_Position = uProjectionMatrix * uViewMatrix * aModelMatrix * vec4(aPosition, 1.0);
 
     // Calculate the normal matrix and transform the normal
-    mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
+    mat3 normalMatrix = transpose(inverse(mat3(aModelMatrix)));
     vNormal = normalize(normalMatrix * aNormal);
 
     // Calculate fragment position in world space
-    vFragPos = vec3(uModelMatrix * vec4(aPosition, 1.0));
+    vFragPos = vec3(aModelMatrix * vec4(aPosition, 1.0));
 }
 `;
 
@@ -32,13 +35,13 @@ void main() {
   
   in vec3 vNormal;   // Normal from vertex shader
   in vec3 vFragPos;  // Position from vertex shader
+  in vec3 vDiffuseColor;
   
   uniform vec3 uLight0Position;  // Light position
   uniform vec3 uLight0LookAt;  // Light lookat direction
   uniform vec3 uViewPosition;   // Camera position
   
   uniform vec3 uAmbientColor;   // Material ambient color
-  uniform vec3 uDiffuseColor;   // Material diffuse color
   uniform vec3 uSpecularColor;  // Material specular color
   uniform float uShininess;     // Material shininess
   
@@ -53,11 +56,11 @@ void main() {
 
       // ==== Overhead lighting ====
       // Ambient component
-      vec3 ambient = uAmbientColor * uDiffuseColor * .99;
+      vec3 ambient = uAmbientColor * vDiffuseColor * .99;
   
       // Diffuse component
       float diff = max(dot(norm, light0Dir), 0.0);
-      vec3 diffuse = diff * uDiffuseColor * 0.99;
+      vec3 diffuse = diff * vDiffuseColor * 0.99;
   
       // Specular component
       vec3 reflectDir = reflect(-light0Dir, norm);
@@ -79,15 +82,15 @@ void main() {
      attribLocations: {
        vertexPosition: gl.getAttribLocation(shaderProgram, 'aPosition'),
        vertexNormal: gl.getAttribLocation(shaderProgram, 'aNormal'), // Add this
+       model: gl.getAttribLocation(shaderProgram, 'aModelMatrix'),
+       diffuseColor: gl.getAttribLocation(shaderProgram, 'aDiffuseColor'),
      },
      uniformLocations: {
        projection: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
        view: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-       model: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
  
        // Material properties
        ambientColor: gl.getUniformLocation(shaderProgram, 'uAmbientColor'),
-       diffuseColor: gl.getUniformLocation(shaderProgram, 'uDiffuseColor'),
        specularColor: gl.getUniformLocation(shaderProgram, 'uSpecularColor'),
        shininess: gl.getUniformLocation(shaderProgram, 'uShininess'),
  
@@ -103,8 +106,7 @@ void main() {
   // add testes for all your uniform locations 
   if (programInfo.attribLocations.vertexPosition === -1 ||
     programInfo.uniformLocations.projection === -1 ||
-    programInfo.uniformLocations.view === -1 ||
-    programInfo.uniformLocations.model === -1) {
+    programInfo.uniformLocations.view === -1) {
     printError('Shader Location Error', 'One or more of the uniform and attribute variables in the shaders could not be located');
   }
   return programInfo;
@@ -118,8 +120,8 @@ void main() {
  */
 function initShaderProgram(gl, vsSource, fsSource) {
     // Use our custom function to load and compile the shader objects
-    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
 
     // Create the shader program by attaching and linking the shader objects
     const shaderProgram = gl.createProgram();
@@ -162,7 +164,7 @@ function loadShader(gl, type, source) {
         } else if (type === gl.FRAGMENT_SHADER) {
             typeStr = 'FRAGMENT';
         }
-        printError('An error occurred compiling the shader: ' + typeStr, gl.getShaderInfoLog(shader));
+        console.error('An error occurred compiling the shader: ' + typeStr, gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
     }

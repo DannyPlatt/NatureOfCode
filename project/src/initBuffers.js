@@ -3,6 +3,7 @@
  ************************************/
 
 function initBuffers(gl, object, positionArray, indicesArray, normalArray) {
+
   // Convert arrays to typed arrays
   const positions = new Float32Array(positionArray);
   const indices = new Uint16Array(indicesArray);
@@ -20,6 +21,9 @@ function initBuffers(gl, object, positionArray, indicesArray, normalArray) {
 
   // Initialize index buffer
   const indexBuffer = initIndexBuffer(gl, indices);
+
+  // // initialize diffuse buffer
+  // const diffuseBuffer = initDiffuseColorAttrib(gl, programInfo, colorArray) {
 
   object.buffers = {
     vao: vertexArrayObject,
@@ -77,21 +81,21 @@ function initPositionAttribute(gl, programInfo, positionArray) {
 }
 
 
-function initColourAttribute(gl, programInfo, colourArray) {
+function initDiffuseColorAttrib(gl, programInfo, colorArray) {
 
   // Create a buffer for the positions.
-  const colourBuffer = gl.createBuffer();
+  const colorBuffer = gl.createBuffer();
 
   // Select the buffer as the one to apply buffer
   // operations to from here out.
-  gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 
   // Now pass the list of positions into WebGL to build the
   // shape. We do this by creating a Float32Array from the
   // JavaScript array, then use it to fill the current buffer.
   gl.bufferData(
     gl.ARRAY_BUFFER, // The kind of buffer this is
-    colourArray, // The data in an Array object
+    colorArray, // The data in an Array object
     gl.STATIC_DRAW // We are not going to change this data, so it is static
   );
 
@@ -107,7 +111,7 @@ function initColourAttribute(gl, programInfo, colourArray) {
 
     // Set the information WebGL needs to read the buffer properly
     gl.vertexAttribPointer(
-      programInfo.attribLocations.vertexColour,
+      programInfo.attribLocations.vertexColor,
       numComponents,
       type,
       normalize,
@@ -119,7 +123,7 @@ function initColourAttribute(gl, programInfo, colourArray) {
       programInfo.attribLocations.vertexColour);
   }
 
-  return colourBuffer;
+  return colorBuffer;
 }
 
 function initIndexBuffer(gl, elementArray) {

@@ -4,29 +4,25 @@ let BINCOUNT = 0;
 let bin;
 
 function setup(state, gl) {
-  let flockCount = 100;
+  let flockCount = 1000;
+  let scale = 2
+
   // initBalls(gl,state, flockCount);
-  flock = new Flock();
-  bin = new Binn(10, state.canvasWidth, state.canvasHeight, state.canvasDepth);
-  for (let i = 0; i < flockCount; i++) {
-    let boid = spawnNewBoid(
-      gl = gl, 
-      objectList = state.objects.boids, 
-      // position = vec3.random(vec3.create(), 5),
-      position = vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
-      velocity = vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
-      // velocity = vec3.fromValues(randomFl(-20,20),randomFl(-20, 20), randomFl(-20, 20)),
-      // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
-      color = [0.2,0.2,0.2],
-      scale = [2,2,2], 
-      mass = 1, 
-      type = sphere,
-      radius = 2,
-    );
-    flock.addBoid(boid);
-  }
-  // flock.boids[flock.boids.length-1].position[0] = 10; 
-  flock.boids[flock.boids.length-1].scale = [3,3,3]; 
+  flock = new Flock(gl);
+  initBuffers( // TODO move into createFlock
+    gl, flock, 
+    sphere.vertices.flat(), 
+    sphere.triangles.flat(), 
+    sphere.normals.flat()
+  )
+  flock.createFlock(flockCount, 
+    gl, 
+    state, 
+    color=[0.5,0,0], 
+    scale=[scale,scale,scale], 
+    type=sphere
+  );
+  bin = new Binn(8, state.canvasWidth, state.canvasHeight, state.canvasDepth);
 }
 
 
@@ -49,7 +45,7 @@ function draw(state, gl) {
   });
   flock.boids[flock.boids.length-1].material.diffuseColor = [0,0,0];
 
-  drawScene(state, gl); // FROM drawScene.js
+  drawScene(state, gl, flock); // FROM drawScene.js
   // console.log("LOOPCOUNT: ", LOOPCOUNT)
 }
 
