@@ -32,6 +32,7 @@ function spawnNewObject(
     scale=[1,1,1], 
     mass=1, 
     type, 
+    isObsticle = false,
   ){
   // create new object
   var newShape = new Object(
@@ -42,6 +43,7 @@ function spawnNewObject(
     scale = scale,
     mass = mass,
     type = type,
+    isObsticle = isObsticle,
   )
   // Add newShape to triangles
   objectList.push(newShape);

@@ -5,7 +5,7 @@
  * @param {object} state: information about scene
  */
 function drawScene(state, gl) {
-  gl.clearColor(0.1, 0.1, 0.3, 1.0); // Set background
+  gl.clearColor(0.1, 0.01, 0.03, 1.0); // Set background
   // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
   gl.depthFunc(gl.LEQUAL); // Near things obscure far things

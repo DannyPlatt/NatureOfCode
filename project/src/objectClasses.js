@@ -89,6 +89,7 @@ class Object {
     scale = [1,1,1], 
     mass = 1,
     type,
+    isObsticle = false,
   ) {
     this.position = position;
     this.velocity = velocity;
@@ -97,6 +98,7 @@ class Object {
     this.mass = mass;
     this.timer = 0;
     this.color = color;
+    this.isObsticle = isObsticle;
     // WebGL info
     this.name = type.name;
     this.programInfo = transformShader(gl) // FROM shadersAndUniforms.js
@@ -228,21 +230,21 @@ class Boid extends Object {
   ) {
     super(gl, position, velocity, color, scale, mass, type);
     this.maxSpeed = 50;
-    this.maxForce = 80;
+    this.maxForce = 100;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
     this.cohereForce = vec3.create();
     this.cohereCount = 0;
     this.collision = false;
+    this.preditor = false;
   }
 
-  run(boids, startPoint, state) {
-    // this.flock(boids);
-    this.newFlock(boids, startPoint);
+  runBoid(neighbors, state) {
+    this.avoidObjects(state);
+    this.flockBehaviour(neighbors, state);
+    this.edges(state);
     this.update(state);
-    // this.edges();
-    // this.show();
   }
 
   seek(target) { // target: position vector
@@ -255,17 +257,59 @@ class Boid extends Object {
     return steer
   }
 
-  newFlock(neighbors, startingPoint) {
-    let sepDist = this.scale[0];
-    let aliDist = 10;
-    let cohereDist = 10;
-    let preditorDist = 9.5;
+  avoidObjects(state){
+    let obsticleDist = this.scale[0]+20;
     let steer = vec3.create();
     let diff = vec3.create();
     let neg = vec3.create();
+    // LOOP THROUGH SCENE OBJECTS
+    for(let other of state.objects.scene) {
+      LOOPCOUNT++;
+      if (!other.isObsticle){continue;}
+
+      let objOuterDist = vec3.dist(this.position, other.position) - other.scale[0]/2;
+      if ( objOuterDist < this.scale[0]) {
+        diff = vec3.sub(diff, other.position, this.position); // Vector from other to this
+        let norm = vec3.normalize(vec3.create(), diff);
+        // reflect object off sphere
+        let val = vec3.dot(this.velocity, norm) * 2;
+        vec3.scale(norm, norm, val)
+        vec3.sub(this.velocity, this.velocity, norm);
+        // move object outside of sphere
+        diff = vec3.sub(diff, this.position, other.position); // Vector from this to other 
+        vec3.normalize(diff, diff);
+        vec3.scale(diff, diff, other.scale[0]/2+this.scale[0])
+        vec3.add(this.position, other.position, diff);
+        continue;
+      }
+      else if(objOuterDist < obsticleDist) {
+        // diff = this.seek(other.position);
+        vec3.sub(diff,this.position, other.position);
+        vec3.scale(diff, diff, -2);
+        // limit(diff, this.maxForce);
+        if (objOuterDist=== 0){objOuterDist= 0.00001;}
+        vec3.scale(diff, diff, 1/(objOuterDist));
+        // vec3.add(other.separationForce, other.separationForce, vec3.negate(neg,diff));
+        vec3.add(this.separationForce, this.separationForce, vec3.negate(neg,diff));
+        this.applyForce(diff);
+        continue;
+      }
+    }
+
+
+  }
+
+  flockBehaviour(neighbors, state) {
+    let sepDist = this.scale[0];
+    let aliDist = this.scale[0]+10;
+    let cohereDist = this.scale[0]+10;
+    let obsticleDist = this.scale[0]+20;
+    let preditorDist = this.scale[0]+8.5;
+    let diff = vec3.create();
+    let neg = vec3.create();
+    // LOOP THROUGH NEIGHBORING BOIDS
     for(let i = 0; i < neighbors.length; i++) {
       LOOPCOUNT++;
-
       let other = neighbors[i];
       if (this === other) {continue;} // skip loop if comparing itself
       // Find separation distance
@@ -276,37 +320,27 @@ class Boid extends Object {
         vec3.normalize(diff, diff);
         if (distanceMagSq === 0){distanceMagSq = 0.00001;}
         vec3.scale(diff, diff, 1/Math.sqrt(distanceMagSq));
-        // vec3.add(other.separationForce, other.separationForce, vec3.negate(neg,diff));
         vec3.add(this.separationForce, this.separationForce, diff);
       }       
+      // RUN FROM PREDITOR
+      if (other.preditor && distanceMagSq < preditorDist * preditorDist) {
+        vec3.sub(diff,this.position, other.position);
+        diff = this.seek(other.position);
+        vec3.scale(diff, diff, -5);
+        this.applyForce(diff);
+        continue;
+      }
       // ALIGN
       if (distanceMagSq < aliDist*aliDist) {
-        // vec3.add(other.alignForce, other.alignForce, this.velocity);
         vec3.add(this.alignForce, this.alignForce, other.velocity);
       }
       // COHERE
       if (distanceMagSq < cohereDist*cohereDist) {
         this.collision = true;
         other.collision = true;
-        // vec3.add(other.cohereForce, other.cohereForce, this.position); // apply to other boid
         vec3.add(this.cohereForce, this.cohereForce, other.position); // apply to this boid
-        // other.cohereCount++;
         this.cohereCount++;
       }
-      /*
-      if (other === boids[boids.length - 1] && distanceMagSq < preditorDist * preditorDist) {
-        // vec3.sub(diff,this.position, other.position);
-        diff = this.seek(other.position);
-        vec3.scale(diff, diff, -3);
-        this.applyForce(diff);
-        if(distanceMagSq < this.scale[0] * this.scale[0]){
-          // boids.splice(i, 1);
-          // this.material.diffuseColor = [1,1,1];
-
-        }
-        continue;
-      }
-      */
     }
     if (this.collision) {
     } else {
@@ -478,16 +512,16 @@ class Flock {
     this.buffers = undefined;
     this.boids = [];
     this.material =  {
-      ambientColor: [0.0, 0.0, 0.0],
+      ambientColor: [0.5, 0.5, 0.5],
       diffuseColor: [color[0], color[1], color[2]],
-      specularColor: [0.0, 0.0, 0.0],
-      shininess: 10.0,
+      specularColor: [1.0, 1.0, 1.0],
+      shininess: 30.0,
     };
   }
-  run(state, bin) {
+  runFlock(state, bin) {
     for (let i = 0; i < this.boids.length; i++) {
       let neighbors = bin.getNeighbors(this.boids[i], state); 
-      this.boids[i].run(neighbors, i, state);
+      this.boids[i].runBoid(neighbors,state);
     }
   }
 
@@ -496,10 +530,12 @@ class Flock {
       let boid = spawnNewBoid(
         gl = gl, 
         state.objects.boids, 
-        // position = vec3.random(vec3.create(), 5),
-        vec3.fromValues(0,randomFl(-2, 2), randomFl(-2, 2)),
-        // vec3.fromValues(0,randomFl(-20, 20), randomFl(-20, 20)),
-        vec3.fromValues(randomFl(-40,40),randomFl(-40, 40), randomFl(-40, 40)),
+        vec3.fromValues(randomFl(-40,40),randomFl(-40, 40), randomFl(-40, 40)), // Position3D
+        vec3.fromValues(randomFl(-40,40),randomFl(-40, 40), randomFl(-40, 40)), // Velocity3D 
+        // vec3.fromValues(randomFl(-20, 20),0, randomFl(-20, 20)), // Postiion 2D
+        // vec3.fromValues(randomFl(-20, 20),0, randomFl(-20, 20)), // Velocity 2D
+         // vec3.fromValues(-100,0, 0,), // position 1D
+         // vec3.fromValues(randomInt(-10,30),0, 1,), // velocity 1D
         // color = [randomFl(0,1),randomFl(0, 1), randomFl(0, 1)],
         color,
         scale,

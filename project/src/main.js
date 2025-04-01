@@ -39,7 +39,8 @@ function game() {
       color = obj.color, 
       scale = obj.scale, 
       mass = 1, 
-      type = obj.type
+      type = obj.type,
+      isObsticle = obj.obsticle
     )
   });
   console.log("enviroment setup: " ,state.objects.scene);
@@ -90,17 +91,17 @@ function initState(gl, canvas) {
     objects: {
       flock: undefined,
       boids: [],
-      scene: []
+      scene: [],
     },
     canvas: canvas,
-    canvasWidth: 200,
-    canvasHeight: 100,
-    canvasDepth: 200,
+    canvasWidth: 70,
+    canvasHeight: 70,
+    canvasDepth: 70,
     selectedIndex: 0,
     hasSelected: false,
     light: [
       { // overhead light
-        position: vec3.fromValues(0, 0, 100), // position of the light source (we can adjust however we want)
+        position: vec3.fromValues(0, -100, 0), // position of the light source (we can adjust however we want)
         lookat: vec3.create(),
       },
     ]
@@ -115,7 +116,7 @@ function handleTime(state, then, fpsElem) {
     if (then === 0) {
       return now;
     }
-    state.dt = (now - then) * 1; 
+    state.dt = (now - then) * 0.6; 
     if (state.dt > 0.5) {
       state.dt = .1
     }
