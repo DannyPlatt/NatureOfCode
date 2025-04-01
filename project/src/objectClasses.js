@@ -474,9 +474,9 @@ class Flock {
     this.buffers = undefined;
     this.boids = [];
     this.material =  {
-      ambientColor: [1.0, 0.4, 1.0],
+      ambientColor: [0.0, 0.0, 0.0],
       diffuseColor: [color[0], color[1], color[2]],
-      specularColor: [1.0, 1.0, 1.0],
+      specularColor: [0.0, 0.0, 0.0],
       shininess: 10.0,
     };
   }
@@ -510,6 +510,90 @@ class Flock {
   addBoid(boid) {
     this.boids.push(boid);
   }
+
+  drawFlock(gl, state, viewMatrix, projectionMatrix) {
+    gl.useProgram(this.programInfo.program);
+    gl.uniformMatrix4fv(this.programInfo.uniformLocations.projection, false, projectionMatrix);
+    gl.uniformMatrix4fv(this.programInfo.uniformLocations.view, false, viewMatrix);
+
+    var positionTransformData = new Array([]);
+    var colorTransformData = new Array([]);
+    // Update uniforms with state variables values
+    {
+      // Update model transform
+      // ===============================================
+      // It is odd that the transformations are applied in reverse order
+      // Objects are translated up so that y scaling is completely in the positive direction. We do not need y scaling below the table
+      for(let object of this.boids) {
+        mat4.identity(object.modelMatrix);
+        mat4.translate(object.modelMatrix, object.modelMatrix, object.position);
+        mat4.translate(object.modelMatrix, object.modelMatrix, object.centroid);
+        // mat4.mul( object.modelMatrix, object.modelMatrix, object.object.model.rotation.mat);
+        mat4.scale(object.modelMatrix, object.modelMatrix, object.scale);
+        mat4.translate(object.modelMatrix, object.modelMatrix, [
+          -object.centroid[0],
+          -object.centroid[1],
+          -object.centroid[2],
+        ]);
+        positionTransformData.push(...object.modelMatrix);
+        colorTransformData.push(object.material.diffuseColor);
+      }
+      // console.log("MODELMATRIX: ", this.boids[0].modelMatrix);
+      // set attributes
+
+
+      // Set light uniforms
+      gl.uniform3fv(this.programInfo.uniformLocations.light0Position, state.light[0].position);
+      gl.uniform3fv(this.programInfo.uniformLocations.light0LookAt, state.light[0].lookat);
+      gl.uniform3fv(this.programInfo.uniformLocations.viewPosition, state.camera.position);
+
+      // Set material uniforms
+      gl.uniform3fv(this.programInfo.uniformLocations.ambientColor, this.material.ambientColor);
+      // gl.uniform3fv(this.programInfo.uniformLocations.diffuseColor, this.material.diffuseColor);
+      gl.uniform3fv(this.programInfo.uniformLocations.specularColor, this.material.specularColor);
+      gl.uniform1f(this.programInfo.uniformLocations.shininess, this.material.shininess);
+      // ===============================================
+      // Update other uniforms 
+      // gl.uniformMatrix4fv(object.programInfo.uniformLocations.model, false, modelMatrix);
+      // gl.uniform4fv( object.programInfo.uniformLocations.color, object.color,)
+    }
+    { // Draw 
+      // Bind the buffer we want to draw
+      gl.bindVertexArray(this.buffers.vao);
+
+      // manually assign buffers
+      const transformBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, transformBuffer)
+      // console.log(new Float32Array(positionTransformData.flat()));
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionTransformData.flat()), gl.STATIC_DRAW);
+      const matLoc = 3;
+      gl.vertexAttribPointer(matLoc+0, 4, gl.FLOAT, false, 64, 0);
+      gl.vertexAttribPointer(matLoc+1, 4, gl.FLOAT, false, 64, 16);
+      gl.vertexAttribPointer(matLoc+2, 4, gl.FLOAT, false, 64, 32);
+      gl.vertexAttribPointer(matLoc+3, 4, gl.FLOAT, false, 64, 48);
+
+      gl.vertexAttribDivisor(matLoc + 0, 1);
+      gl.vertexAttribDivisor(matLoc + 1, 1);
+      gl.vertexAttribDivisor(matLoc + 2, 1);
+      gl.vertexAttribDivisor(matLoc + 3, 1);
+
+      gl.enableVertexAttribArray(matLoc + 0);
+      gl.enableVertexAttribArray(matLoc + 1);
+      gl.enableVertexAttribArray(matLoc + 2);
+      gl.enableVertexAttribArray(matLoc + 3);
+
+      const colorBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorTransformData.flat()), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(2,1)
+      gl.enableVertexAttribArray(2);
+
+      // Draw the object
+      const offset = 0; // Number of elements to skip before starting
+      // gl.drawElements(gl.LINE_LOOP, this.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
+      gl.drawElementsInstanced(gl.TRIANGLES, this.buffers.numVertices, gl.UNSIGNED_SHORT, offset, this.boids.length);
+    }
 }
 
 function limit(vec, maxLength) {

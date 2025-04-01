@@ -4,7 +4,7 @@ let BINCOUNT = 0;
 let bin;
 
 function setup(state, gl) {
-  let flockCount = 6000;
+  let flockCount = 1000;
   let scale = 4;
 
   // initBalls(gl,state, flockCount);
@@ -38,9 +38,8 @@ function draw(state, gl) {
     object.update(state);
     LOOPCOUNT++;
 	
-    //object.material.diffuseColor = [object.velocity[0], object.velocity[1], object.velocity[2]];
     let tempColor = vec3.length(object.velocity)/object.maxSpeed;
-    object.material.diffuse = [tempColor,0,0];
+    // object.material.diffuseColor = [tempColor,0,0];
     // object.applyForce([0,0,-10]);
   });
   flock.boids[flock.boids.length-1].material.diffuseColor = [0,0,0];

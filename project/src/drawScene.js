@@ -36,6 +36,9 @@ function drawScene(state, gl, flock) {
   );
   // assign perspective and view matricies
   // No loop per object, single draw call on flock.boids.position
+  //
+  // Draw Flock
+  flock.drawFlock(gl, state, viewMatrix, projectionMatrix);
 
   // Choose to use our shader
   gl.useProgram(flock.programInfo.program);
@@ -62,7 +65,7 @@ function drawScene(state, gl, flock) {
         -object.centroid[2],
       ]);
       positionTransformData.push(...object.modelMatrix);
-      colorTransformData.push(object.material.diffuse);
+      colorTransformData.push(object.material.diffuseColor);
     }
     // console.log("MODELMATRIX: ", flock.boids[0].modelMatrix);
     // set attributes
