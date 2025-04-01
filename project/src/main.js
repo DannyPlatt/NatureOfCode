@@ -33,7 +33,7 @@ function game() {
   scene.forEach(obj => { // FROM scene.js
     spawnNewObject(
       gl = gl, 
-      objectList = state.objects.environment, 
+      objectList = state.objects.scene, 
       position = vec3.fromValues(obj.position[0],obj.position[1],obj.position[2]),
       velocity = vec3.create(), 
       color = obj.color, 
@@ -42,7 +42,7 @@ function game() {
       type = obj.type
     )
   });
-  console.log("enviroment setup: " ,state.objects.environment);
+  console.log("enviroment setup: " ,state.objects.scene);
   // ============= SETUP KEY PRESS DETECTION ==============
   var keysPressed = setupKeypresses(state); // FROM keyPresses.js
 
@@ -88,8 +88,9 @@ function initState(gl, canvas) {
       pivotDelay: .5 // 0 = instant movement, 1 = follow velocity
     },
     objects: {
-      boids:[],
-      environment: []
+      flock: undefined,
+      boids: [],
+      scene: []
     },
     canvas: canvas,
     canvasWidth: 100,

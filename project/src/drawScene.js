@@ -4,7 +4,7 @@
  * @param  {webGL2 object} gl: WebGL2 context
  * @param {object} state: information about scene
  */
-function drawScene(state, gl, flock) {
+function drawScene(state, gl) {
   gl.clearColor(0.1, 0.01, 0.05, 1.0); // Set background
 // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -38,9 +38,11 @@ function drawScene(state, gl, flock) {
   // No loop per object, single draw call on flock.boids.position
   //
   // Draw Flock
-  flock.drawFlock(gl, state, viewMatrix, projectionMatrix);
+  state.flock.drawFlock(gl, state, viewMatrix, projectionMatrix);
+  for (let object of state.objects.scene){}
 
   // Choose to use our shader
+  /*
   gl.useProgram(flock.programInfo.program);
   gl.uniformMatrix4fv(flock.programInfo.uniformLocations.projection, false, projectionMatrix);
   gl.uniformMatrix4fv(flock.programInfo.uniformLocations.view, false, viewMatrix);
@@ -123,6 +125,7 @@ function drawScene(state, gl, flock) {
     // gl.drawElements(gl.LINE_LOOP, flock.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
     gl.drawElementsInstanced(gl.TRIANGLES, flock.buffers.numVertices, gl.UNSIGNED_SHORT, offset, flock.boids.length);
   }
+  */
 }
 
 /**

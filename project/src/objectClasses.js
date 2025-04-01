@@ -488,7 +488,6 @@ class Flock {
   }
 
   createFlock(flockCount, gl, state,  color=[0.2,0.2,0.2], scale=[1,1,1], type=sphere) {
-    console.log("OBJECTRS: ", state.objects.boids);
     for (let i = 0; i < flockCount; i++) {
       let boid = spawnNewBoid(
         gl = gl, 
@@ -503,7 +502,7 @@ class Flock {
         1, 
         type,
       );
-      flock.addBoid(boid);
+      state.flock.addBoid(boid);
     }
   }
 
@@ -594,6 +593,7 @@ class Flock {
       // gl.drawElements(gl.LINE_LOOP, this.buffers.numVertices, gl.UNSIGNED_SHORT, offset);
       gl.drawElementsInstanced(gl.TRIANGLES, this.buffers.numVertices, gl.UNSIGNED_SHORT, offset, this.boids.length);
     }
+  }
 }
 
 function limit(vec, maxLength) {
