@@ -3,7 +3,7 @@ let BINCOUNT = 0;
 let bin;
 
 function setup(state, gl) {
-  let flockCount = 100;
+  let flockCount = 1000;
   let scale = 4;
 
   // initBalls(gl,state, flockCount);

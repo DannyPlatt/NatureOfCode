@@ -168,7 +168,7 @@ class Object {
     }
     else if (this.position[1] > state.canvasHeight/2) {
       this.velocity[1] = this.velocity[1] * reduction;
-      this.position[1] = state.canvasHeight/2; 
+      this.position[1] = state.canvasHeigt/2; 
     }
     // Z
     else if (this.position[2] < -state.canvasDepth/2) {
@@ -193,6 +193,10 @@ class Object {
     // Z
     else if (this.position[2] < -state.canvasHeight/2 || this.position[2]>state.canvasHeight/2){
       steer = this.seek(vec3.fromValues(this.position[0],this.position[1],0));
+    }
+    if (this.position[2] < -state.canvasHeight/2 - 20) {
+      this.velocity[2] = this.velocity[2] * -0.1;
+      this.position[2] = -state.canvasHeight/2 - 20; 
     }
     if (steer != 0){
       this.applyForce(steer);
@@ -223,8 +227,8 @@ class Boid extends Object {
     type,
   ) {
     super(gl, position, velocity, color, scale, mass, type);
-    this.maxSpeed = 100;
-    this.maxForce = 160;
+    this.maxSpeed = 50;
+    this.maxForce = 80;
     this.wanderTheta = 0;
     this.separationForce = vec3.create();
     this.alignForce = vec3.create();
