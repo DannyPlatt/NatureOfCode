@@ -42,7 +42,7 @@ function draw(state, gl) {
   });
   state.flock.boids[0].material.diffuseColor = [1,1,1];
   state.flock.boids[0].material.ambientColor = [1,1,1];
-  state.flock.boids[0].material.specularColor= [1,1,1];
+  state.flock.boids[0].material.specularColor= [1,1,1]; // TODO: Either remove boid specular color or use it instead of flock
   // have light postiion equal preditor
   state.light[0].position = state.flock.boids[0].position;
 

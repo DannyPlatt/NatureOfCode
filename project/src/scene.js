@@ -6,27 +6,27 @@ var scene = [
   //   color: [1,1,1,1],
   //   obsticle: true
   // },
-  {
-    type: origin,
-    position: [0,0,0],
-    scale: [0.5,100,0.5],
-    color: [0,0,1,1],
-    obsticle: false,
-  },
-  {
-    type: origin,
-    position: [0,0,0],
-    scale: [0.5,0.5,100],
-    color: [1,0,0,1],
-    obsticle: false,
-  },
-  {
-    type: origin,
-    position: [0,0,0],
-    scale: [100,0.5,0.5],
-    color: [0,1,0,1],
-    obsticle: false,
-  },
+  // {
+  //   type: origin,
+  //   position: [0,0,0],
+  //   scale: [0.5,100,0.5],
+  //   color: [0,0,1,1],
+  //   obsticle: false,
+  // },
+  // {
+  //   type: origin,
+  //   position: [0,0,0],
+  //   scale: [0.5,0.5,100],
+  //   color: [1,0,0,1],
+  //   obsticle: false,
+  // },
+  // {
+  //   type: origin,
+  //   position: [0,0,0],
+  //   scale: [100,0.5,0.5],
+  //   color: [0,1,0,1],
+  //   obsticle: false,
+  // },
   { // Floor
     type: cube,
     position: [0,0,-575],
