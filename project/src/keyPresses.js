@@ -1,7 +1,9 @@
 function setupKeypresses(state) {
   var keysPressed = {}
   document.addEventListener('keydown', (event) =>{
-    event.preventDefault();
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      event.preventDefault();
+    }
     keysPressed[event.key] = true;
   })
   document.addEventListener('keyup', (event) =>{

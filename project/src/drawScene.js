@@ -5,6 +5,8 @@
  * @param {object} state: information about scene
  */
 function drawScene(state, gl) {
+  resizeCanvasToDisplaySize(gl.canvas);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0.1, 0.01, 0.03, 1.0); // Set background
   // setup rasterization settings
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
