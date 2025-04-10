@@ -4,7 +4,7 @@ let bin;
 let planet;
 
 function setup(state, gl) {
-  let flockCount = 100;
+  let flockCount = 30000;
   let scale = 6;
 
   // initBalls(gl,state, flockCount);
@@ -35,10 +35,12 @@ function setup(state, gl) {
 function draw(state, gl) {
   LOOPCOUNT = 0;
   BINCOUNT= 0;
-  bin.repopulate(state.flock); 
-  state.flock.runFlock(state, bin);
+  // bin.repopulate(state.flock); 
+  // state.flock.runFlock(state, bin);
   state.flock.boids.forEach(object => {
     LOOPCOUNT++;
+    object.edges(state);
+    object.update(state);
     let tempColor = vec3.length(object.velocity)/object.maxSpeed;
     object.material.diffuseColor = [tempColor,0,0];
   });
