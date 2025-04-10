@@ -3,8 +3,9 @@ let BINCOUNT = 0;
 let bin;
 
 function setup(state, gl) {
-  let flockCount = 1000;
+  let flockCount = 4000;
   let scale = 6;
+  let preFlockTimer = performance.now();
 
   // initBalls(gl,state, flockCount);
   state.flock = new Flock(gl);
@@ -23,6 +24,8 @@ function setup(state, gl) {
   );
   bin = new Binn(15, state.canvasWidth, state.canvasHeight, state.canvasDepth);
   state.flock.boids[0].preditor = true; // Set preditor
+  let postFlockTimer = performance.now();
+  console.log("setupTimer: ", postFlockTimer - preFlockTimer);
 }
 
 function draw(state, gl) {
