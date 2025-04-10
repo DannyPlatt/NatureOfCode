@@ -53,7 +53,6 @@ function game() {
   const fpsElem = document.querySelector('#fps');
   let fpsUpdate = 0
   var then = 0.0;
-  let lastTime = performance.now();
   let maxFrameTime = 0;
   setup(state, gl); // Add before loop items
 
@@ -69,7 +68,7 @@ function game() {
     }
   }
   // Draw the scene
-  requestAnimationFrame(render);
+  requestAnimationFrame(render)
 }
 
 function initState(gl, canvas) {
@@ -89,7 +88,6 @@ function initState(gl, canvas) {
       pivotDelay: .5 // 0 = instant movement, 1 = follow velocity
     },
     objects: {
-      flock: undefined,
       boids: [],
       scene: [],
     },

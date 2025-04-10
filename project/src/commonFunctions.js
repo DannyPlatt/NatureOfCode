@@ -82,14 +82,13 @@ function spawnNewBoid(
   )
   // Add newShape to triangles
   objectList.push(newShape);
-  // initBuffer(gl, object, positionArray, indicesArray) 
-  initBuffers( // FROM initBuffers.js
-    gl, 
-    objectList.at(-1), 
-    type.vertices.flat(),
-    type.triangles.flat(),
-    type.normals.flat()
-  );
+  // initBuffers( // FROM initBuffers.js
+  //   gl, 
+  //   objectList.at(-1), 
+  //   type.vertices.flat(),
+  //   type.triangles.flat(),
+  //   type.normals.flat()
+  // );
   return newShape;
 }    
 function resizeCanvasToDisplaySize(canvas) {

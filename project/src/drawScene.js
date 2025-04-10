@@ -5,7 +5,7 @@
  * @param {object} state: information about scene
  */
 function drawScene(state, gl) {
-  resizeCanvasToDisplaySize(gl.canvas);
+  resizeCanvasToDisplaySize(gl.canvas); // Fit gl canvas to html canvas
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0.1, 0.01, 0.03, 1.0); // Set background
   // setup rasterization settings
@@ -22,12 +22,9 @@ function drawScene(state, gl) {
   var aspect = state.canvas.clientWidth / state.canvas.clientHeight; // Aspect ratio of the canvas
   var near = 0.1; // Near clipping plane
   var far = 500.0; // Far clipping plane
-  // Generate the projection matrix using perspective
-  mat4.perspective(projectionMatrix, fovy, aspect, near, far);
+  mat4.perspective(projectionMatrix, fovy, aspect, near, far); 
   // Setup camera view matrix
   var focalPoint = vec3.add(vec3.create(), state.camera.position, state.camera.at);
-  // update view matrix with state.camera
-  // link to corresponding uniform object.programInfo.uniformLocations.[...]
   // Use lookat to create viewMatrix
   var viewMatrix = mat4.create();
   mat4.lookAt(
@@ -36,8 +33,6 @@ function drawScene(state, gl) {
     focalPoint,
     state.camera.up,
   );
-  // assign perspective and view matricies
-  // No loop per object, single draw call on flock.boids.position
 
   state.flock.drawFlock(gl, state, viewMatrix, projectionMatrix);
   
