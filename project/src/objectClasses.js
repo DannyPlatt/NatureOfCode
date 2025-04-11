@@ -170,7 +170,7 @@ class Object {
     }
     else if (this.position[1] > state.canvasHeight/2) {
       this.velocity[1] = this.velocity[1] * reduction;
-      this.position[1] = state.canvasHeigt/2; 
+      this.position[1] = state.canvasHeight/2; 
     }
     // Z
     else if (this.position[2] < -state.canvasDepth/2) {
@@ -300,7 +300,7 @@ class Boid extends Object {
   }
 
   flockBehaviour(neighbors, state) {
-    let sepDist = this.scale[0];
+    let sepDist = this.scale[0] * 1.5;
     let aliDist = this.scale[0]+10;
     let cohereDist = this.scale[0]+10;
     let obsticleDist = this.scale[0]+20;
@@ -561,11 +561,15 @@ class Flock {
     // Update model transform
     // ===============================================
     // It is odd that the transformations are applied in reverse order
+    var rotationMatrix = new mat4.create();
     for(let object of this.boids) {
+      mat4.identity(rotationMatrix);
       mat4.identity(object.modelMatrix);
+      rotationMatrix = getRotationMatrixFromVelocity(object, rotationMatrix);
+
       mat4.translate(object.modelMatrix, object.modelMatrix, object.position);
       mat4.translate(object.modelMatrix, object.modelMatrix, object.centroid);
-      // mat4.mul( object.modelMatrix, object.modelMatrix, object.object.model.rotation.mat);
+      mat4.mul( object.modelMatrix, object.modelMatrix, rotationMatrix);
       mat4.scale(object.modelMatrix, object.modelMatrix, object.scale);
       mat4.translate(object.modelMatrix, object.modelMatrix, [
         -object.centroid[0],

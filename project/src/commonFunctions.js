@@ -18,6 +18,42 @@ function constrain(num, min, max) {
   }
 }
 
+function getRotationMatrixFromVelocity(object, out, up = [0, 1, 0]) {
+  const velocity = vec3.clone(object.velocity);
+
+  // Prevent zero velocity from causing NaN
+  if (vec3.length(velocity) < 1e-5) {
+    return mat4.identity(out);
+  }
+
+  const bz = vec3.create();
+  vec3.normalize(bz, velocity);
+
+  let by = vec3.create();
+  if (Math.abs(bz[2]) < Math.abs(bz[0]) && Math.abs(bz[2]) < Math.abs(bz[1])) {
+    vec3.set(by, bz[1], -bz[0], 0);
+  } else {
+    vec3.set(by, bz[2], 0, -bz[0]);
+  }
+  vec3.normalize(by, by);
+
+  const bx = vec3.create();
+  vec3.cross(bx, by, bz);
+
+  // Transpose to match OpenGL column-major format
+  mat4.set(out,
+    bx[0], by[0], bz[0], 0,
+    bx[1], by[1], bz[1], 0,
+    bx[2], by[2], bz[2], 0,
+    0,     0,     0,     1
+  );
+
+  mat4.transpose(out, out); // optional depending on your layout
+  
+  return out;
+}
+
+
 /**
  * Used to add new objects to the scene
  * @param  {object} gl: the global web gl object
