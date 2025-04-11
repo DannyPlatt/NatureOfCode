@@ -154,7 +154,7 @@ class Object {
   */
   hardEdges(state) {
     // X
-    const reduction = -0.9
+    const reduction = -1
     if (this.position[0] < -state.canvasWidth/2) { 
       this.velocity[0] = this.velocity[0] * reduction;
       this.position[0] = -state.canvasWidth/2; 

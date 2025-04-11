@@ -2,11 +2,14 @@ let LOOPCOUNT;
 let BINCOUNT = 0;
 let bin;
 let planet;
+let planet2;
 
 function setup(state, gl) {
-  let flockCount = 30000;
+  let flockCount = 400;
   let scale = 6;
   let preFlockTimer = performance.now();
+  planet = state.objects.scene[1];
+  planet.velocity = vec3.fromValues(100, 0, 30);
 
   // initBalls(gl,state, flockCount);
   let then = performance.now();
@@ -38,12 +41,13 @@ function setup(state, gl) {
 function draw(state, gl) {
   LOOPCOUNT = 0;
   BINCOUNT= 0;
-  // bin.repopulate(state.flock); 
-  // state.flock.runFlock(state, bin);
+  bin.repopulate(state.flock); 
+  state.flock.runFlock(state, bin);
   state.flock.boids.forEach(object => {
     LOOPCOUNT++;
-    object.edges(state);
-    object.update(state);
+    // object.edges(state);
+    // object.avoidObjects(state);
+    // object.update(state);
     let tempColor = vec3.length(object.velocity)/object.maxSpeed;
     object.material.diffuseColor = [tempColor,0,0];
   });
@@ -55,6 +59,8 @@ function draw(state, gl) {
   state.light[0].position = state.flock.boids[0].position;
 
   // Movement of planets
+  planet.hardEdges(state);
+  planet.update(state);
 
 
   drawScene(state, gl); // FROM drawScene.js
