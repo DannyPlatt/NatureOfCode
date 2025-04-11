@@ -5,7 +5,7 @@ let planet;
 let planet2;
 
 function setup(state, gl) {
-  let flockCount = 500;
+  let flockCount = 1000;
   let scale = 6;
   let preFlockTimer = performance.now();
   planet = state.objects.scene[1];
@@ -25,7 +25,7 @@ function setup(state, gl) {
     gl, 
     state, 
     color=[0.5,0,0], 
-    scale=[scale/3,scale/3,scale], 
+    scale=[scale/2,scale/2,scale], 
     type=cube,
   );
   let postFlock = performance.now()
@@ -61,14 +61,14 @@ function draw(state, gl) {
   // state.light[0].position = state.flock.boids[0].position;
 
   // Movement of planets
-  // var posy = Math.sin(performance.now()/2000) * state.canvasWidth/2;
-  // var posx = Math.cos(performance.now()/2000) * state.canvasWidth/2;
-  // planet.position[0] = posx;
-  // planet.position[1] = posy;
-  // planet.position[2] = posx;
-  // planet2.position[0] = -posx;
-  // planet2.position[1] = -posy;
-  // planet2.position[2] = -posx;
+  var posy = Math.sin(performance.now()/2000) * state.canvasWidth/2;
+  var posx = Math.cos(performance.now()/2000) * state.canvasWidth/2;
+  planet.position[0] = posx;
+  planet.position[1] = posy;
+  planet.position[2] = posx;
+  planet2.position[0] = -posx;
+  planet2.position[1] = -posy;
+  planet2.position[2] = -posx;
 
   drawScene(state, gl); // FROM drawScene.js
 }
